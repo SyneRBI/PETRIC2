@@ -1,17 +1,32 @@
-# PETRIC: PET Rapid Image Reconstruction Challenge
+# PETRIC 2: Second PET Rapid Image reconstruction Challenge
 
-[![website](https://img.shields.io/badge/announcement-website-purple?logo=workplace&logoColor=white)](https://www.ccpsynerbi.ac.uk/events/petric/)
-[![wiki](https://img.shields.io/badge/details-wiki-blue?logo=googledocs&logoColor=white)][wiki]
-[![leaderboard](https://img.shields.io/badge/rankings-leaderboard-orange?logo=tensorflow&logoColor=white)][leaderboard]
+[![wiki](https://img.shields.io/badge/details-wiki-blue?logo=googledocs&logoColor=white)](https://github.com/SyneRBI/PETRIC2/wiki)
 [![discord](https://img.shields.io/badge/chat-discord-blue?logo=discord&logoColor=white)](https://discord.gg/Ayd72Aa4ry)
 
-## Participating
+## Welcome to PETRIC 2!
 
-PETRIC has now concluded. Please check out the  [awards-and-results](https://github.com/SyneRBI/PETRIC/wiki/Awards-and-results)!
+(If you have not heard about PETRIC before, you can find out about it [here](https://github.com/SyneRBI/PETRIC).)
 
-Recordings of the PETRIC workshop are available on [https://www.ccpsynerbi.ac.uk/petric-workshop](https://www.ccpsynerbi.ac.uk/petric-workshop)
+## What's the same?
+We are going to solve a maximum a-posteriori estimate (MAP) using the smoothed relative difference prior (RDP) reconstruction problem and the aim of the challenge is to reach the target image quality as fast as possible.
+We will provide you with PET sinogram phantom data from different scanners and an example repository on GitHub with an implementation of a reference algorithm.
+There will be a leaderboard which is continuously updated to make sure you know how you are doing.
 
-After the challenge is before the challenge so have a look at [PETRIC 2](https://github.com/SyneRBI/PETRIC2)
+## What's new?
+This time we are going to make things more challenging! The PET sinogram data will be created from fewer counts which means your algorithm will have to cope with more noise in the data. 
+
+## Timeline
+- Start of the challenge: 1 November 2025
+- End of the challenge: 1 March 2026
+
+## Questions?
+We will update this page regularly and for more info please also have a look at our [wiki](https://github.com/SyneRBI/PETRIC2/wiki). 
+In the meantime you can check out our previous challenge [PETRIC](https://github.com/SyneRBI/PETRIC).
+
+> [!WARNING]
+> This repository is a work in progress.
+
+<!--
 
 ## Layout
 
@@ -56,7 +71,7 @@ You can also find some example notebooks here which should help you with your de
 
 The organisers will execute (after installing [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) & downloading <https://petric.tomography.stfc.ac.uk/data/> to `/path/to/data`):
 
-<!-- TODO: use synerbi/sirf:latest-gpu after the next SIRF release -->
+**TODO: use synerbi/sirf:latest-gpu after the next SIRF release**
 
 ```sh
 # 1. git clone & cd to your submission repository
@@ -91,7 +106,7 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC/wiki/
 > Submission(data).run(numpy.inf, callbacks=metrics + submission_callbacks)
 > ```
 
-<!-- br -->
+---
 
 > [!WARNING]
 > To avoid timing out (currently 10 min runtime, will likely be increased a bit for the final evaluation after submissions close), please disable any debugging/plotting code before submitting!
@@ -112,3 +127,5 @@ Any modifications to `petric.py` are ignored.
 
 [wiki]: https://github.com/SyneRBI/PETRIC/wiki
 [leaderboard]: https://petric.tomography.stfc.ac.uk/leaderboard/?smoothing=0#timeseries&_smoothingWeight=0
+
+-->
