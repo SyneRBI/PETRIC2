@@ -17,7 +17,10 @@ This time we are going to make things more challenging! The PET sinogram data wi
 
 ## Timeline
 - Start of the challenge: 1 November 2025
-- End of the challenge: 1 March 2026
+- End of the challenge: 15 February 2026
+
+## Awards
+The winners of PETRIC2 will be announced as part of the Symposium on AI & Reconstruction for Biomedical Imaging taking place from 9 – 10 March 2026 in London (https://www.ccpsynerbi.ac.uk/events/airbi/). All participants of PETRIC2 will be invited to submit an abstract at the beginning of December 2025 and will then have the opportunity to present their work at the Symposium. More information on the abstract and possible travel stipends will follow soon. 
 
 ## Questions?
 We will update this page regularly and for more info please also have a look at our [wiki](https://github.com/SyneRBI/PETRIC2/wiki). 
