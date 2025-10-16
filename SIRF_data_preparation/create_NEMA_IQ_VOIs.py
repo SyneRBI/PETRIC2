@@ -159,6 +159,6 @@ os.makedirs(datadir, exist_ok=True)
 for VOI, n in zip(VOIs, VOInames):
     VOI.write(str(datadir / n))
 # %%
-VOI_checks(VOInames, OSEM_image=reference_image, reference_image=None, srcdir=datadir)
+VOI_checks(VOInames, OSEM_image=reference_image, reference_image=None, VOIdir=datadir)
 # %%
 plt.show()
