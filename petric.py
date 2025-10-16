@@ -249,9 +249,13 @@ class Dataset:
     voi_masks: dict[str, STIR.ImageData]
     FOV_mask: STIR.ImageData
     path: PurePath
+    
+def add_noise(acquired_data: STIR.AcquisitionData, additive_term: STIR.AcquisitionData, noise_level: float):
+    # add noise
+    print(f'Adapting noise level to {noise_level}')
+    return acquired_data, additive_term
 
-
-def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
+def get_data_with_noise_level(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True, noise_level=None):
     """
     Load data from `srcdir`, constructs prior and return as a `Dataset`.
     Also redirects sirf.STIR log output to `outdir`, unless that's set to None
@@ -267,6 +271,11 @@ def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
     additive_term = STIR.AcquisitionData(str(srcdir / 'additive_term.hs')) if read_sinos else None
     mult_factors = STIR.AcquisitionData(str(srcdir / 'mult_factors.hs')) if read_sinos else None
     OSEM_image = STIR.ImageData(str(srcdir / 'OSEM_image.hv'))
+    
+    # Adapt noise level
+    if noise_level:
+        acquired_data, additive_term = add_noise(acquired_data, additive_term, noise_level)
+    
     # Find FOV mask
     # WARNING: we are currently using Parralelproj with default settings, which uses a cylindrical FOV.
     # The current code gives identical results to thresholding the sensitivity image (for those settings)
@@ -293,6 +302,9 @@ def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
     return Dataset(acquired_data, additive_term, mult_factors, OSEM_image, prior, kappa, reference_image,
                    whole_object_mask, background_mask, voi_masks, FOV_mask, srcdir.resolve())
 
+def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
+    return get_data_with_noise_level(srcdir, outdir, sirf_verbosity, read_sinos, noise_level=None)
+    
 
 DATA_SLICES = {
     'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
