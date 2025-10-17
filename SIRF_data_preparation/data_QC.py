@@ -12,6 +12,7 @@ Options:
   --VOIdir=<VOIpath>     pathname. Will default to current directory/PETRIC unless dataset is set
   --skip_sino_profiles   do not plot the sinogram profiles (and skip checks)
   --skip_VOI_plots       do not plot the VOI images (and skip checks)
+  --no_plot_wait         do not wait at the end of the script for the user to close figures
   --transverse_slice=<i>  idx [default: -1]
   --coronal_slice=<c>    idx [default: -1]
   --sagittal_slice=<s>   idx [default: -1]
@@ -226,6 +227,7 @@ def main(argv=None):
     VOIdir = args['--VOIdir']
     skip_sino_profiles = args['--skip_sino_profiles']
     skip_VOI_plots = args['--skip_VOI_plots']
+    no_plot_wait = args['--no_plot_wait']
     slices = {}
     slices["transverse_slice"] = literal_eval(args['--transverse_slice'])
     slices["coronal_slice"] = literal_eval(args['--coronal_slice'])
@@ -265,7 +267,8 @@ def main(argv=None):
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
     os.makedirs(VOIoutdir, exist_ok=True)
     VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots, **slices)
-    plt.show()
+    if not no_plot_wait:
+        plt.show()
 
 
 if __name__ == '__main__':
