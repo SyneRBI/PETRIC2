@@ -10,12 +10,14 @@ Options:
   --dataset=<name>       dataset name. if set, it is used to override default slices
   --srcdir=<path>        pathname. Will default to current directory unless dataset is set
   --VOIdir=<VOIpath>     pathname. Will default to current directory/PETRIC unless dataset is set
-  --skip_sino_profiles   do not plot the sinogram profiles
+  --skip_sino_profiles   do not plot the sinogram profiles (and skip checks)
+  --skip_VOI_plots       do not plot the VOI images (and skip checks)
   --transverse_slice=<i>  idx [default: -1]
   --coronal_slice=<c>    idx [default: -1]
   --sagittal_slice=<s>   idx [default: -1]
 
-Note that -1 one means to use the dataset settings, and if those do not exist, use the middle of image
+Note that a slice index of -1 one means to use the dataset settings, and if those do not exist,
+use the middle of image.
 """
 # Copyright 2024-2025 University College London
 # Licence: Apache-2.0
@@ -132,7 +134,7 @@ def VOI_stddev(image, VOI):
     return float(np.sqrt((d * d * VOI).sum() / VOI.sum()))
 
 
-def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, outdir=None, **kwargs):
+def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, outdir=None, skip_VOI_plots=False, **kwargs):
     """Save VOI images, mean and stddev values
 
     outdir defaults to VOIdir
@@ -157,25 +159,27 @@ def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, 
             continue
         VOI = STIR.ImageData(filename)
         VOI_arr = VOI.as_array()
-        check_values_non_negative(VOI_arr, VOIname)
-        COM = np.rint(ndimage.center_of_mass(VOI_arr))
-        num_voxels = VOI_arr.sum()
-        print(f"VOI: {VOIname}: COM (in indices): {COM} voxels {num_voxels} = {num_voxels * np.prod(VOI.spacing)} mm^3")
-        plt.figure()
-        plot_image(VOI, save_name=prefix, vmin=0, vmax=1, transverse_slice=int(COM[0]), coronal_slice=int(COM[1]),
-                   sagittal_slice=int(COM[2]))
-        if OSEM_image is not None:
+        if not skip_VOI_plots:
+            check_values_non_negative(VOI_arr, VOIname)
+            COM = np.rint(ndimage.center_of_mass(VOI_arr))
+            num_voxels = VOI_arr.sum()
+            print(f"VOI: {VOIname}: COM (in indices): {COM} voxels {num_voxels} = {num_voxels * np.prod(VOI.spacing)} mm^3")
+            plt.figure()
+            plot_image(VOI, save_name=prefix, vmin=0, vmax=1, transverse_slice=int(COM[0]), coronal_slice=int(COM[1]),
+                       sagittal_slice=int(COM[2]))
+        if OSEM_image is not None and not skip_VOI_plots:
             plt.figure()
             plot_image(OSEM_image, alpha=(VOI+.5) / 1.5, save_name=prefix + "_and_OSEM", transverse_slice=int(COM[0]),
                        coronal_slice=int(COM[1]), sagittal_slice=int(COM[2]))
 
-        # construct transparency image
-        if VOIname == 'VOI_whole_object':
-            VOI /= 2
-        if allVOIs is None:
-            allVOIs = VOI.clone()
-        else:
-            allVOIs += VOI
+            # construct transparency image
+            if VOIname == 'VOI_whole_object':
+                VOI /= 2
+            if allVOIs is None:
+                allVOIs = VOI.clone()
+            else:
+                allVOIs += VOI
+
         if OSEM_image is not None:
             OSEM_VOI_mean_values.append(VOI_mean(OSEM_image, VOI))
             OSEM_VOI_stddev_values.append(VOI_stddev(OSEM_image, VOI))
@@ -184,9 +188,8 @@ def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, 
             ref_VOI_mean_values.append(VOI_mean(reference_image, VOI))
             ref_VOI_stddev_values.append(VOI_stddev(reference_image, VOI))
 
+    if OSEM_image is not None and not skip_VOI_plots:
         allVOIs /= allVOIs.max()
-
-    if OSEM_image is not None:
         plt.figure()
         plot_image(OSEM_image, alpha=allVOIs, save_name=os.path.join(outdir, "OSEM_image_and_VOIs"), **kwargs)
 
@@ -222,6 +225,7 @@ def main(argv=None):
     srcdir = args['--srcdir']
     VOIdir = args['--VOIdir']
     skip_sino_profiles = args['--skip_sino_profiles']
+    skip_VOI_plots = args['--skip_VOI_plots']
     slices = {}
     slices["transverse_slice"] = literal_eval(args['--transverse_slice'])
     slices["coronal_slice"] = literal_eval(args['--coronal_slice'])
@@ -260,7 +264,7 @@ def main(argv=None):
     allVOInames = [os.path.basename(str(voi)[:-3]) for voi in Path(VOIdir).glob("VOI_*.hv")]
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
     os.makedirs(VOIoutdir, exist_ok=True)
-    VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, **slices)
+    VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots, **slices)
     plt.show()
 
 
