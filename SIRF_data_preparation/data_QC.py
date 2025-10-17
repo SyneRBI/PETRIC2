@@ -135,7 +135,8 @@ def VOI_stddev(image, VOI):
     return float(np.sqrt((d * d * VOI).sum() / VOI.sum()))
 
 
-def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, outdir=None, skip_VOI_plots=False, **kwargs):
+def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, outdir=None, skip_VOI_plots=False,
+               **kwargs):
     """Save VOI images, mean and stddev values
 
     outdir defaults to VOIdir
@@ -164,7 +165,8 @@ def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, 
             check_values_non_negative(VOI_arr, VOIname)
             COM = np.rint(ndimage.center_of_mass(VOI_arr))
             num_voxels = VOI_arr.sum()
-            print(f"VOI: {VOIname}: COM (in indices): {COM} voxels {num_voxels} = {num_voxels * np.prod(VOI.spacing)} mm^3")
+            volume = num_voxels * np.prod(VOI.spacing)
+            print(f"VOI: {VOIname}: COM (in indices): {COM} voxels {num_voxels} = {volume} mm^3")
             plt.figure()
             plot_image(VOI, save_name=prefix, vmin=0, vmax=1, transverse_slice=int(COM[0]), coronal_slice=int(COM[1]),
                        sagittal_slice=int(COM[2]))
@@ -267,7 +269,8 @@ def main(argv=None):
     allVOInames = [os.path.basename(str(voi)[:-3]) for voi in Path(VOIdir).glob("VOI_*.hv")]
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
     os.makedirs(VOIoutdir, exist_ok=True)
-    VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots, **slices)
+    VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots,
+               **slices)
     if not no_plot_wait:
         plt.show()
 
