@@ -195,11 +195,12 @@ def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, 
         plot_image(OSEM_image, alpha=allVOIs, save_name=os.path.join(outdir, "OSEM_image_and_VOIs"), **kwargs)
 
     # unformatted print of VOI values for now
-    print(allVOInames)
-    print(OSEM_VOI_mean_values)
-    print(OSEM_VOI_stddev_values)
-    print(ref_VOI_mean_values)
-    print(ref_VOI_stddev_values)
+    print('VOI names  ', allVOInames)
+    print('OSEM mean  ', OSEM_VOI_mean_values)
+    print('OSEM stddev', OSEM_VOI_stddev_values)
+    print('ref mean   ', ref_VOI_mean_values)
+    print('ref stddev ', ref_VOI_stddev_values)
+    print('also written to csv in ', outdir)
     if len(allVOInames) > 0:
         with open(os.path.join(outdir, 'VOI_labels.csv'), 'w', newline='') as file:
             writer = csv.writer(file)
