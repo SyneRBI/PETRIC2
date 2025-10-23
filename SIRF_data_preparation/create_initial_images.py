@@ -86,6 +86,21 @@ def compute_kappa_image(obj_fun, initial_image):
     return minus_Hessian_row_sum.maximum(0).power(.5)
 
 
+def run(outdir, acquired_data, additive_term, mult_factors, template_image, num_updates=14, num_subsets=2,
+        write_kappa=True):
+    acq_model, obj_fun = create_acq_model_and_obj_fun(acquired_data, additive_term, mult_factors, template_image)
+
+    initial_image = scale_initial_image(acquired_data, additive_term, mult_factors, template_image, obj_fun)
+    print(f'Initial_image max: {initial_image.max()}')
+    OSEM_image = OSEM(obj_fun, initial_image, num_updates=num_updates, num_subsets=num_subsets)
+    print(f'OSEM_image max: {OSEM_image.max()}')
+    OSEM_image.write(os.path.join(outdir, 'OSEM_image.hv'))
+
+    if write_kappa:
+        kappa = compute_kappa_image(obj_fun, OSEM_image)
+        kappa.write(os.path.join(outdir, 'kappa.hv'))
+
+
 def main(argv=None):
     args = docopt(__doc__, argv=argv, version=__version__)
     logging.basicConfig(level=logging.INFO)
@@ -93,38 +108,26 @@ def main(argv=None):
     data_path = args['<data_path>']
     log.info("Finding files in %s", data_path)
     xy_size = int(args['--xy-size'])
-    subs = int(args['--subsets'])
-    siters = int(args['--subiterations'])
+    num_subsets = int(args['--subsets'])
+    num_updates = int(args['--subiterations'])
     template_image_filename = args['--template_image']
     # engine's messages go to files, except error messages, which go to stdout
     _ = STIR.MessageRedirector('info.txt', 'warnings.txt')
 
-    previous_dir = os.getcwd()
-    os.chdir(data_path)
-    try:
-        acquired_data = STIR.AcquisitionData('prompts.hs')
-        additive_term = STIR.AcquisitionData('additive_term.hs')
-        mult_factors = STIR.AcquisitionData('mult_factors.hs')
-        if template_image_filename == 'None':
-            log.info("Constructing template image from prompts")
-            template_image = acquired_data.create_uniform_image(0)
-        else:
-            template_image = STIR.ImageData(template_image_filename)
-        if xy_size > 0:
-            template_image = template_image.zoom_image(zooms=(1, 1, 1), offsets_in_mm=(0, 0, 0),
-                                                       size=(-1, xy_size, xy_size))
-        acq_model, obj_fun = create_acq_model_and_obj_fun(acquired_data, additive_term, mult_factors, template_image)
+    acquired_data = STIR.AcquisitionData('prompts.hs')
+    additive_term = STIR.AcquisitionData('additive_term.hs')
+    mult_factors = STIR.AcquisitionData('mult_factors.hs')
+    if template_image_filename == 'None':
+        log.info("Constructing template image from prompts")
+        template_image = acquired_data.create_uniform_image(0)
+    else:
+        template_image = STIR.ImageData(template_image_filename)
+    if xy_size > 0:
+        template_image = template_image.zoom_image(zooms=(1, 1, 1), offsets_in_mm=(0, 0, 0),
+                                                   size=(-1, xy_size, xy_size))
 
-        initial_image = scale_initial_image(acquired_data, additive_term, mult_factors, template_image, obj_fun)
-        print(f'Initial_image max: {initial_image.max()}')
-        OSEM_image = OSEM(obj_fun, initial_image, num_updates=siters, num_subsets=subs)
-        print(f'OSEM_image max: {OSEM_image.max()}')
-        OSEM_image.write('OSEM_image.hv')
-
-        kappa = compute_kappa_image(obj_fun, OSEM_image)
-        kappa.write('kappa.hv')
-    finally:
-        os.chdir(previous_dir)
+    run(outdir=data_path, acquired_data=acquired_data, additive_term=additive_term, mult_factors=mult_factors,
+        template_image=template_image, num_updates=num_updates, num_subsets=num_subsets)
     log.info("done with %s", data_path)
 
 

@@ -335,6 +335,9 @@ if SRCDIR.is_dir() and not os.getenv("PETRIC_SKIP_DATA", False):
         (SRCDIR / "GE_DMI4_NEMA_IQ", OUTDIR / "DMI4_NEMA",
          [MetricsWithTimeout(outdir=OUTDIR / "DMI4_NEMA", **DATA_SLICES['GE_DMI4_NEMA_IQ'])])]
 else:
+    data_dirs_metrics = [(None, None, [])] # type: ignore
+
+if not SRCDIR.is_dir():
     log.warning("Source directory does not exist: %s", SRCDIR)
     data_dirs_metrics = [(None, None, [])] # type: ignore
 
