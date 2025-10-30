@@ -13,23 +13,16 @@ We will provide you with PET sinogram phantom data from different scanners and a
 There will be a leaderboard which is continuously updated to make sure you know how you are doing.
 
 ## What's new?
-This time we are going to make things more challenging! The PET sinogram data will be created from fewer counts which means your algorithm will have to cope with more noise in the data. 
+This time we are going to make things more challenging! The PET sinogram data will be created from fewer counts which means your algorithm will have to cope with more noise in the data. For more information on the new data please go to [wiki/data](https://github.com/SyneRBI/PETRIC2/wiki#data).
+
+In addition to the more challenging data, we have improved our reconstruction software. STIR 6.3 was released which has lots of new features including new analytic reconstruction methods, better GPU support and improved support for reading raw data formats. For more information have a look at the [release notes](https://rawcdn.githack.com/UCL/STIR/c4f12cfc23d5cc85636bc7dedf864ec6c170ec71/documentation/release_6.3.htm). On the SIRF side we focused on speed! We improved the acquisition and image algebra to speed up things by a factor of 3 and optimised our Python interface to ensure we provide data views rather than copying things around. Have a look at the [SIRF 3.9 relase notes](https://github.com/SyneRBI/SIRF/blob/1ba1f9f4f56dfe5ebf1cec5c67d1773056102ae6/CHANGES.md) for more information. 
 
 ## Timeline
-- Start of the challenge: 1 November 2025
+- Start of the challenge: 15 November 2025
 - End of the challenge: 15 February 2026
 
 ## Awards
 The winners of PETRIC2 will be announced as part of the Symposium on AI & Reconstruction for Biomedical Imaging taking place from 9 – 10 March 2026 in London (https://www.ccpsynerbi.ac.uk/events/airbi/). All participants of PETRIC2 will be invited to submit an abstract at the beginning of December 2025 and will then have the opportunity to present their work at the Symposium. More information on the abstract and possible travel stipends will follow soon. 
-
-## Questions?
-We will update this page regularly and for more info please also have a look at our [wiki](https://github.com/SyneRBI/PETRIC2/wiki). 
-In the meantime you can check out our previous challenge [PETRIC](https://github.com/SyneRBI/PETRIC).
-
-> [!WARNING]
-> This repository is a work in progress.
-
-<!--
 
 ## Layout
 
@@ -72,7 +65,9 @@ You can also find some example notebooks here which should help you with your de
 
 ## Organiser Setup
 
-The organisers will execute (after installing [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) & downloading <https://petric.tomography.stfc.ac.uk/data/> to `/path/to/data`):
+The organisers will execute (after installing [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) & downloading <https://petric2.tomography.stfc.ac.uk/data/> to `/path/to/data`):
+
+**TODO: start petric2 data server**
 
 **TODO: use synerbi/sirf:latest-gpu after the next SIRF release**
 
@@ -97,7 +92,7 @@ tensorboard --bind_all --port 6006 --logdir ./output
 
 ## FAQ
 
-See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC/wiki/FAQ) for more info.
+See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC2/wiki/FAQ) for more info.
 
 > [!TIP]
 > `petric.py` will effectively execute:
@@ -115,7 +110,7 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC/wiki/
 > To avoid timing out (currently 10 min runtime, will likely be increased a bit for the final evaluation after submissions close), please disable any debugging/plotting code before submitting!
 > This includes removing any progress/logging from `submission_callbacks` and any debugging from `Submission.__init__`.
 
-- `data` to test/train your `Algorithm`s is available at <https://petric.tomography.stfc.ac.uk/data/> and is likely to grow (more info to follow soon)
+- `data` to test/train your `Algorithm`s is available at <https://petric2.tomography.stfc.ac.uk/data/> and is likely to grow (more info to follow soon)
   + fewer datasets will be available during the submission phase, but more will be available for the final evaluation after submissions close
   + please contact us if you'd like to contribute your own public datasets!
 - `metrics` are calculated by `class QualityMetrics` within `petric.py`
@@ -124,11 +119,10 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC/wiki/
 - when using the temporary [leaderboard], it is best to:
   + change `Horizontal Axis` to `Relative`
   + untick `Ignore outliers in chart scaling`
-  + see [the wiki](https://github.com/SyneRBI/PETRIC/wiki#metrics-and-thresholds) for details
+  + see [the wiki](https://github.com/SyneRBI/PETRIC2/wiki#metrics-and-thresholds) for details
 
 Any modifications to `petric.py` are ignored.
 
-[wiki]: https://github.com/SyneRBI/PETRIC/wiki
-[leaderboard]: https://petric.tomography.stfc.ac.uk/leaderboard/?smoothing=0#timeseries&_smoothingWeight=0
+[wiki]: https://github.com/SyneRBI/PETRIC2/wiki
+[leaderboard]: Will be set up soon!
 
--->
