@@ -1,4 +1,4 @@
-# Functions/classes for PETRIC
+# Functions/classes for PETRIC2
 
 ## Utility functions to prepare data for the Challenge
 
@@ -8,6 +8,7 @@ Participants should never have to use these (unless you want to create your own 
 - `data_QC.py`: generates plots for QC
 - `plot_BSREM_metrics.py`: plot objective functions/metrics after a BSREM run
 - `run_BSREM.py` and `run_OSEM.py`: scripts to run these algorithms for a dataset
+- `run_bootstrap.sh`: script to generate a new data-set using (sinogram) bootstrapping
 
 ## Helpers
 
@@ -29,9 +30,14 @@ for the Siemens mMR NEMA IQ data (on Zenodo):
 
 # Steps to follow to prepare data
 If starting from Siemens mMR list-mode data and letting SIRF take care of scatter etc, check for instance [steps for Siemens mMR ACR](Siemens_mMR_ACR/README.md). If pre-prepared data are given, check that naming of all files is correct. KT normally puts all data
-in `~/devel/PETRIC/data/<datasetname>` with `datasetname` following convention of `scanner_phantom-name` as others (instructions below and indeed some scripts might assume this location). Change working directory to where data sits and add PETRIC to your python-path, e.g.
+in `~/devel/PETRIC2/data/<datasetname>` with `datasetname` following convention of `scanner_phantom-name` as others (instructions below and indeed some scripts might assume this location). Change working directory to where data sits and add PETRIC2 to your python-path, e.g.
 ```
-PYTHONPATH=~/devel/PETRIC:$PYTHONPATH`
+PYTHONPATH=~/devel/PETRIC2:$PYTHONPATH`
+```
+Install extra software if you don't have it yet:
+```
+conda install scikit-image
+pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics
 ```
 
 1. Run initial [data_QC.py](data_QC.py)
