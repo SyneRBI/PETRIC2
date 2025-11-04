@@ -60,7 +60,10 @@ def main(argv=None):
     if srcdir is None:
         srcdir = the_data_path(dataset)
         # settings = get_settings(dataset)
-
+    else:
+        srcdir = the_data_path(srcdir, dataset)
+    
+    print(f"Input in {srcdir}")
     outdir = OUTDIR / outname
     print(f"Output in {outdir}")
 

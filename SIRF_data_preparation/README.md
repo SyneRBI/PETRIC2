@@ -78,3 +78,27 @@ pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-Q
     ```
 14. `cd data/<datasetname>; rm -rf *ahv PETRIC/*ahv output info.txt warnings.txt`, check its `README.md` etc
 15. Transfer to web-server
+
+### PETRIC2
+Start old PETRIC docker image on 
+
+```
+docker run -v ./PETRIC2:/home/jovyan/PETRIC2 -v /mnt/share-public/petric:/home/jovyan/PETRIC2/data -d harbor.stfc.ac.uk/imaging-tomography/sirfcil:petric
+```
+or with the compose file
+
+
+- Start the container: `docker compose up -d`
+- Stop the container: `docker compose down`
+- View logs: `docker compose logs petric`
+- Check status: `docker compose ps`
+
+#### Bootstrap OSEM
+
+
+Should run `run_bootstrap_OSEM.sh` with dataset=$1
+sfs="$2"
+reps="$3"
+
+`run_bootstrap_OSEM.sh GE_D690_NEMA_IQ 1e-2 1`
+

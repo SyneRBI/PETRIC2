@@ -1,0 +1,10 @@
+services:
+  petric:
+    image: harbor.stfc.ac.uk/imaging-tomography/sirfcil:petric
+    container_name: petric-container
+    volumes:
+      - /home/ofn77899/PETRIC2:/home/jovyan/PETRIC2:rw
+      - /mnt/share-public/petric:/data
+    restart: unless-stopped
+    # Remove the -d flag as docker-compose runs containers in detached mode by default
+    # Add any additional configuration as needed
