@@ -95,6 +95,7 @@ or with the compose file
 
 #### Bootstrap OSEM
 
+The machine requires `zip` to be installed.
 
 Should run `run_bootstrap_OSEM.sh` with dataset=$1
 sfs="$2"
