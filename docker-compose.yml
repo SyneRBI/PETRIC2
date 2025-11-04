@@ -6,5 +6,12 @@ services:
       - /home/ofn77899/PETRIC2:/home/jovyan/PETRIC2:rw
       - /mnt/share-public/petric:/data
     restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     # Remove the -d flag as docker-compose runs containers in detached mode by default
     # Add any additional configuration as needed
