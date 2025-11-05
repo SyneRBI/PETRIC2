@@ -97,10 +97,6 @@ or with the compose file
 
 The machine requires `zip` to be installed.
 
-Should run `run_bootstrap_OSEM.sh` with dataset=$1
-sfs="$2"
-reps="$3"
-
 ```
 cd PETRIC2
 ./SIRF_data_preparation/run_bootstrap_OSEM.sh GE_D690_NEMA_IQ 1e-2 1
