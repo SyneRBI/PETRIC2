@@ -19,7 +19,7 @@ Options:
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024-2025 University College London
 # Licence: Apache-2.0
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 import csv
 import os
@@ -58,7 +58,7 @@ print(f"{SRCDIR}", SRCDIR.is_dir())
 print(f"{OUTDIR}", OUTDIR.is_dir())
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/devel/PETRIC2').expanduser()
+    PETRICDIR = Path('~/PETRIC2').expanduser()
     # SRCDIR = PETRICDIR / 'data'
     SRCDIR = Path("/data")
     OUTDIR = PETRICDIR / 'output'
@@ -109,7 +109,7 @@ obj_fun.set_prior(data.prior)
 algo = LBFGSBPC(obj_fun, initial=initial_image, update_objective_interval=interval, 
                 write_at_interval=True, outdir=outdir)
 # %%
-algo.run(iterations=num_updates)
+algo.run(iterations=num_updates+1)
 # %%
 
 algo.get_output().write(str(outdir / "LBFGSBPC.hv"))
