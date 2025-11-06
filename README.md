@@ -126,3 +126,9 @@ Any modifications to `petric.py` are ignored.
 [wiki]: https://github.com/SyneRBI/PETRIC2/wiki
 [leaderboard]: Will be set up soon!
 
+## Run OSEM
+
+```
+cd PETRIC2
+bash run_bootstrap_OSEM.sh GED690_NEMA_IQ 1 1ls
+```
