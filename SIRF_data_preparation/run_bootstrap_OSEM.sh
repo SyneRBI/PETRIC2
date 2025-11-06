@@ -6,6 +6,7 @@
 
 export PETRIC_SKIP_DATA=1
 # dataset=$1
+# datasets="NeuroLF_Hoffman_Dataset"
 datasets="GE_D690_NEMA_IQ GE_DMI3_Torso GE_DMI4_NEMA_IQ Mediso_NEMA_IQ NeuroLF_Esser_Dataset NeuroLF_Hoffman_Dataset Siemens_mMR_ACR Siemens_mMR_NEMA_IQ Siemens_Vision600_Hoffman Siemens_Vision600_thorax Siemens_Vision600_ZrNEMAIQ"
 # sfs="$2"
 sfs="1 1e-1 1e-2 1e-3"
@@ -18,8 +19,10 @@ for dataset in $datasets; do
     python -m SIRF_data_preparation.data_QC --srcdir=output/${dataset}_${sf}_${rep} --dataset=${dataset} --skip_sino_profiles --skip_VOI_plots --no_plot_wait --VOIdir=/data/${dataset}/PETRIC
   done
  done
- echo "Zipping results for dataset ${dataset}"
- find ./output  \( -path ./${dataset}'*OSEM_image*' -o -path ./${dataset}'*VOI*csv' \) -exec zip -u output/bootstrap_results_${dataset}.zip {} +
+ echo "Zipping results for dataset ${dataset}\n\n\n"
+ pushd output
+ find .  \( -path ./${dataset}'*OSEM_image*' -o -path ./${dataset}'*VOI*csv' \) -exec zip -u bootstrap_results_${dataset}.zip {} +
+ popd
 done
 # cd output
 
