@@ -47,9 +47,15 @@ def check_values_non_negative(arr: npt.NDArray[np.float32], desc: str):
     min = np.min(arr)
     max = np.max(arr)
     if np.isnan(min) or min < 0:
-        raise ValueError(f"{desc}: minimum should be non-negative but is {min} (max={max})")
+        if np.abs(min) > np.finfo(np.float32).tiny:
+            raise ValueError(f"{desc}: minimum should be non-negative but is {min} (max={max})")
+        else:
+            print(f"Warning: {desc}: minimum is slightly negative {min} (max={max})")
+            print("Clipping to zero")
+            return False
     if not np.isfinite(max):
         raise ValueError(f"{desc}: maximum should be finite")
+    return True
 
 
 def plot_sinogram_profile(prompts, background, sumaxis=(0, 1), select=0, srcdir='./'):
@@ -121,7 +127,9 @@ def plot_image_if_exists(prefix, **kwargs):
 def check_and_plot_image_if_exists(prefix, **kwargs):
     im = plot_image_if_exists(prefix, **kwargs)
     if im is not None:
-        check_values_non_negative(im.as_array(), prefix)
+        notclip = check_values_non_negative(im.as_array(), prefix)
+        if not notclip:
+            im.fill(np.clip(im.as_array(), 0, None))
     return im
 
 
@@ -267,7 +275,9 @@ def main(argv=None):
     reference_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'PETRIC/reference_image'), **slices)
 
     allVOInames = [os.path.basename(str(voi)[:-3]) for voi in Path(VOIdir).glob("VOI_*.hv")]
+    print (f"Found VOIs: {allVOInames}")
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
+    print (f"Writing VOI results to: {VOIoutdir}")
     os.makedirs(VOIoutdir, exist_ok=True)
     VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots,
                **slices)
