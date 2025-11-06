@@ -102,3 +102,15 @@ cd PETRIC2
 ./SIRF_data_preparation/run_bootstrap_OSEM.sh GE_D690_NEMA_IQ 1e-2 1
 ```
 
+#### Run fsf
+
+```
+git clone https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics.git
+pip install .
+
+cd PETRIC2
+wget https://github.com/SyneRBI/SIRF-Contribs/raw/refs/heads/master/src/Python/sirf/contrib/LBFGSBPC/LBFGSBPC.py -O LBFGSBPC.py
+. /opt/SIRF-SuperBuild/INSTALL/bin/env_sirf.sh 
+python run_LBFGSBPC.py GE_D690_NEMA_IQ --updates 400 --interval 100 --beta 0.1
+
+```

@@ -1,9 +1,9 @@
 services:
   petric:
-    image: harbor.stfc.ac.uk/imaging-tomography/sirfcil:petric
+    image: synerbi/jupyter:sirf-build-gpu
     container_name: petric-container
     volumes:
-      - /home/ofn77899/PETRIC2:/home/jovyan/PETRIC2:rw
+      - /home/ubuntu/devel/PETRIC2:/home/jovyan/PETRIC2:rw
       - /mnt/share-public/petric:/data
     restart: unless-stopped
     deploy:
