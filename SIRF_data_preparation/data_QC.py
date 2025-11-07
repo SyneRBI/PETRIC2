@@ -16,6 +16,7 @@ Options:
   --transverse_slice=<i>  idx [default: -1]
   --coronal_slice=<c>    idx [default: -1]
   --sagittal_slice=<s>   idx [default: -1]
+  --filter_OSEM_fwhms=fwhm   apply Gaussian filter to OSEM image before VOI analysis [default: 0]
 
 Note that a slice index of -1 one means to use the dataset settings, and if those do not exist,
 use the middle of image.
@@ -239,6 +240,7 @@ def main(argv=None):
     skip_sino_profiles = args['--skip_sino_profiles']
     skip_VOI_plots = args['--skip_VOI_plots']
     no_plot_wait = args['--no_plot_wait']
+    filter_OSEM_fwhms = float(args['--filter_OSEM_fwhms'])
     slices = {}
     slices["transverse_slice"] = literal_eval(args['--transverse_slice'])
     slices["coronal_slice"] = literal_eval(args['--coronal_slice'])
@@ -271,6 +273,15 @@ def main(argv=None):
         check_values_non_negative(background.as_array(), "background")
 
     OSEM_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'OSEM_image'), **slices)
+    if filter_OSEM_fwhms != 0:
+        filter = STIR.SeparableGaussianImageFilter()
+        filter.set_fwhms([filter_OSEM_fwhms] * 3)
+        filter.set_up(OSEM_image)
+        filtered_OSEM = OSEM_image.clone()
+        filter.apply(filtered_OSEM)
+        _OSEM_image = filtered_OSEM
+    else:
+        _OSEM_image = OSEM_image
     check_and_plot_image_if_exists(os.path.join(srcdir, 'kappa'), **slices)
     reference_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'PETRIC/reference_image'), **slices)
 
@@ -279,7 +290,7 @@ def main(argv=None):
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
     print (f"Writing VOI results to: {VOIoutdir}")
     os.makedirs(VOIoutdir, exist_ok=True)
-    VOI_checks(allVOInames, OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots,
+    VOI_checks(allVOInames, _OSEM_image, reference_image, VOIdir=VOIdir, outdir=VOIoutdir, skip_VOI_plots=skip_VOI_plots,
                **slices)
     if not no_plot_wait:
         plt.show()

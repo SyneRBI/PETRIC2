@@ -86,7 +86,7 @@ def compute_kappa_image(obj_fun, initial_image):
     return minus_Hessian_row_sum.maximum(0).power(.5)
 
 
-def run(outdir, acquired_data, additive_term, mult_factors, template_image, num_updates=14, num_subsets=2,
+def run(outdir, acquired_data, additive_term, mult_factors, template_image, num_updates=60, num_subsets=2,
         write_kappa=True):
     acq_model, obj_fun = create_acq_model_and_obj_fun(acquired_data, additive_term, mult_factors, template_image)
 

@@ -15,13 +15,13 @@ reps="1"
 for dataset in $datasets; do
  for sf in $sfs; do
   for rep in $reps; do
-    # python -m SIRF_data_preparation.noise_bootstrap --srcdir=/data/ --dataset=${dataset}  --scale_factor=${sf} --outname=${dataset}_${sf}_${rep}
-    python -m SIRF_data_preparation.data_QC --srcdir=output/${dataset}_${sf}_${rep} --dataset=${dataset} --skip_sino_profiles --skip_VOI_plots --no_plot_wait --VOIdir=/data/${dataset}/PETRIC
+    python -m SIRF_data_preparation.noise_bootstrap --srcdir=/data/ --dataset=${dataset}  --scale_factor=${sf} --outname=${dataset}_${sf}_${rep}
+    python -m SIRF_data_preparation.data_QC --srcdir=output/${dataset}_${sf}_${rep} --dataset=${dataset} --skip_sino_profiles --skip_VOI_plots --no_plot_wait --VOIdir=/data/${dataset}/PETRIC --filter_OSEM_fwhms=12
   done
  done
  echo "Zipping results for dataset ${dataset}\n\n\n"
  pushd output
- find .  \( -path ./${dataset}'*OSEM_image*' -o -path ./${dataset}'*VOI*csv' \) -exec zip -u bootstrap_results_${dataset}.zip {} +
+ find .  \( -path ./${dataset}'*OSEM_image*' -o -path ./${dataset}'*VOI*csv' \) -exec zip -u bootstrap_filtered_results_${dataset}.zip {} +
  popd
 done
 # cd output
