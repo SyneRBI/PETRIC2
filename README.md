@@ -44,7 +44,7 @@ Additional dependencies may be specified via `apt.txt`, `environment.yml`, and/o
   channels: [conda-forge, nvidia]
   dependencies:
   - cupy
-  - cuda-version =11.8
+  - cuda-version 12.8.*
   - pip
   - pip:
     - git+https://github.com/MyResearchGroup/prize-winning-algos
@@ -53,7 +53,7 @@ Additional dependencies may be specified via `apt.txt`, `environment.yml`, and/o
 - `requirements.txt`: passed to `pip install`, e.g.:
 
   ```txt
-  cupy-cuda11x
+  cupy-cuda12x
   git+https://github.com/MyResearchGroup/prize-winning-algos
   ```
 
@@ -78,10 +78,8 @@ docker run --rm -it --gpus all -p 6006:6006 \
   -v /path/to/data:/mnt/share/petric:ro \
   -v .:/workdir -w /workdir synerbi/sirf:edge-gpu /bin/bash
 # 3. install metrics & GPU libraries
-conda install monai tensorboard tensorboardx jupytext cudatoolkit=11.8
-pip uninstall torch # monai installs pytorch (CPU), so remove it
-pip install tensorflow[and-cuda]==2.14  # last to support cu118
-pip install torch --index-url https://download.pytorch.org/whl/cu118
+conda install -y tensorboard tensorboardx jupytext
+pip install git+https://github.com/Project-MONAI/MONAI@1.5.1 torch tensorflow[and-cuda]==2.20 --extra-index-url https://download.pytorch.org/whl/cu128
 pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics
 # 4. optionally, conda/pip/apt install environment.yml/requirements.txt/apt.txt
 # 5. run your submission
