@@ -116,7 +116,7 @@ python run_LBFGSBPC.py GE_D690_NEMA_IQ --updates 400 --interval 100 --beta 0.1
 ```
 ### Edo's config
 
-Build and run the petric2 container.
+Build and run the petric2 container. SB branch `bump-ccpi-modules`
 
 ```
 nohup ./docker/compose.sh -bg > local_build.log &

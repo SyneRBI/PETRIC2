@@ -60,7 +60,7 @@ print(f"{OUTDIR}", OUTDIR.is_dir())
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     PETRICDIR = Path('~/PETRIC2').expanduser()
     # SRCDIR = PETRICDIR / 'data'
-    SRCDIR = Path("/data")
+    SRCDIR = Path("/data/petric2")
     OUTDIR = PETRICDIR / 'output'
 
 outdir = OUTDIR / scanID
