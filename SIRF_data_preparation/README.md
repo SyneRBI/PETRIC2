@@ -106,6 +106,7 @@ cd PETRIC2
 
 ```
 git clone https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics.git
+cd Hackathon-000-Stochastic-QualityMetrics
 pip install .
 
 cd PETRIC2

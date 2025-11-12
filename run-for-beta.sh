@@ -3,7 +3,7 @@
 . /opt/SIRF-SuperBuild/INSTALL/bin/env_sirf.sh
 cd 
 cd PETRIC2
-phantoms="GE_D690_NEMA_IQ GE_DMI4_NEMA_IQ Siemens_mMR_ACR Siemens_mMR_NEMA_IQ"
+phantoms="Siemens_mMR_ACR GE_D690_NEMA_IQ Siemens_mMR_NEMA_IQ Siemens_Vision600_ZrNEMAIQ"
 # phantom="Siemens_Vision600_ZrNEMAIQ"
 for phantom in $phantoms; do
  for beta in 1 10 100 1000; do
