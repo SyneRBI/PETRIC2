@@ -114,3 +114,14 @@ wget https://github.com/SyneRBI/SIRF-Contribs/raw/refs/heads/master/src/Python/s
 python run_LBFGSBPC.py GE_D690_NEMA_IQ --updates 400 --interval 100 --beta 0.1
 
 ```
+### Edo's config
+
+Build and run the petric2 container.
+
+```
+nohup ./docker/compose.sh -bg > local_build.log &
+docker tag synerbi/jupyter:sirf-build-gpu synerbi/sirf:petric2-rc1
+ghcr.io/synerbi/sirf:petric2-rc1
+docker compose -f docker-compose.yml up -d
+nohup docker exec petric-container bash ./PETRIC2/run-for-beta.sh &
+```
