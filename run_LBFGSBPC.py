@@ -94,7 +94,8 @@ print("initial_image:", initial_image_name)
 print("outdir:", outdir)
 print("interval:", interval)
 
-data.prior.set_penalisation_factor(beta)
+petric1_beta = data.prior.get_penalisation_factor()
+data.prior.set_penalisation_factor(beta * petric1_beta)
 print("Penalisation factor:", data.prior.get_penalisation_factor())
 
 num_subsets=1
