@@ -5,7 +5,7 @@ services:
     volumes:
       - /home/ubuntu/devel/PETRIC2:/home/jovyan/PETRIC2:rw
       - /mnt/share-public/petric:/data
-      - /mnt/share-public/petric-wip/petric2:/data/petric2
+      - /mnt/share-public/petric/wip/petric2/:/data/petric2
     restart: unless-stopped
     deploy:
       resources:
