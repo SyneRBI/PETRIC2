@@ -80,7 +80,7 @@ class LBFGSBPC:
             if self.write_at_interval and self.iter > 0:
                 print ("Iteration", self.iter, "objective:", self.loss[-1])
                 res = self.tmp_for_value.get_uniform_copy(0)
-                xx = np.reshape(x[0] * self.Dinv, self.shape)
+                xx = np.reshape(x * self.Dinv, self.shape)
                 np.save(self.outdir / f"LBFGSBPC_iter{self.iter:04d}.npy", xx)
                 res.fill(xx)
                 res.write(str(self.outdir / f"LBFGSBPC_iter{self.iter:04d}.hv"))

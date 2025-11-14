@@ -126,3 +126,11 @@ ghcr.io/synerbi/sirf:petric2-rc1
 docker compose -f docker-compose.yml up -d
 nohup docker exec petric-container bash ./PETRIC2/run-for-beta.sh &
 ```
+
+#### MaGeZ 
+requires 
+
+```
+conda install --channel conda-forge array-api-compat cupy 
+
+```
