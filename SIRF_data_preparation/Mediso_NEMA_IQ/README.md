@@ -1,7 +1,7 @@
 # Data from the Mediso AnyScan at NPL
 Initial processing steps
 ```sh
-orgpath=/mnt/share/petric-wip/NEMA_Challenge
+orgpath=/mnt/share/petric/wip/NEMA_Challenge
 #orgpath=~/devel/PETRIC/orgdata/
 # cd $orgpath
 #wget https://nplanywhere.npl.co.uk/userportal/?v=4.6.1#/shared/public/nrKe5vWynvyMsp7m/e9e3d4b8-8f83-47be-bf2d-17a96a7a8aac
