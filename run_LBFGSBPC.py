@@ -33,6 +33,7 @@ from petric import OUTDIR, SRCDIR, MetricsWithTimeout, get_data
 from sirf.contrib.partitioner import partitioner
 from SIRF_data_preparation import data_QC
 from SIRF_data_preparation.dataset_settings import get_settings
+from SIRF_data_preparation.preferred_scaling import preferred_scaling
 
 import numpy
 from LBFGSBPC import LBFGSBPC
@@ -53,6 +54,7 @@ initial_image = args['--initial_image']
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
 beta = args['--beta']
+sfs = float(preferred_scaling[scanID])
 
 print(f"{SRCDIR}", SRCDIR.is_dir())
 print(f"{OUTDIR}", OUTDIR.is_dir())
@@ -95,7 +97,7 @@ print("outdir:", outdir)
 print("interval:", interval)
 
 petric1_beta = data.prior.get_penalisation_factor()
-data.prior.set_penalisation_factor(float(beta) * petric1_beta)
+data.prior.set_penalisation_factor(float(beta) * petric1_beta * sfs)
 print("Penalisation factor:", data.prior.get_penalisation_factor())
 
 num_subsets=1
