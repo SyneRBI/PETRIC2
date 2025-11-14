@@ -1,9 +1,8 @@
 #%%
-import stir
-from stirextra import *
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+from extract_data_slices import extract_data_slices
 
 
 def read_interfile_header(fname):
@@ -23,14 +22,16 @@ def read_interfile_header(fname):
                 shape[index-1] = size
     return tuple(shape[::-1])
 iter = 400
-num_phantom = 0
-beta = 10
+num_phantom = 1
+beta = 1
 phantoms = ['Siemens_mMR_ACR', 'Siemens_mMR_NEMA_IQ', 'GE_D690_NEMA_IQ']
 shapes = [(127, 285, 285), (127, 200, 200), (127, 344, 344)]
 phantom = phantoms[num_phantom]
 
-dirname = f'output/{phantom}/LBFGSBPC/{beta}/'
-fname = f'{dirname}/LBFGSBPC'
+# algo = 'LBFGSBPC'
+algo = 'MaGeZ'
+dirname = f'output/{phantom}/{algo}/{beta}/'
+fname = f'{dirname}/{algo}'
 
 def read_reconstructed_image(fname):
     arr = np.fromfile(fname+".v", dtype=np.float32)
@@ -45,6 +46,8 @@ def read_reconstructed_image(fname):
 # fname = "/mnt/share-public/petric/Siemens_Vision600_ZrNEMAIQ/PETRIC/reference_image"
 
 # #%%
+# import stir
+# from stirextra import *
 # image = to_numpy(stir.FloatVoxelsOnCartesianGrid.read_from_file(fname+".hv"))
 # print (image.shape)
 # plt.imshow(image[64,:,:], cmap='gray')
@@ -54,32 +57,63 @@ def read_reconstructed_image(fname):
 # %%
 recons = {}
 up = 0
+sup = np.inf
+# betas = [1,10,100,1000]
 betas = [1,10,100,1000]
 for b in betas:
-    dirname = f'output/{phantom}/LBFGSBPC/{b}/'
-    fname = f'{dirname}/LBFGSBPC'
+    dirname = f'output/{phantom}/{algo}/{b}/'
+    fname = f'{dirname}/{algo}'
 
     arr = read_reconstructed_image(fname)
-    print (arr.shape, arr.min(), arr.max())
+    print (fname, arr.shape, arr.min(), arr.max())
     recons[b] = arr
 
     lp = 0
-    up = np.percentile(arr, 99.) if np.percentile(arr, 99.) > up else up
+    nnp = np.percentile(arr, 99.)
+    up = nnp if nnp > up else up
+    sup = nnp if nnp < sup else sup
 # up = 0.0027166688
-print(lp, up)
+print(f"lp {lp}, up {up}, sup {sup}")
+#%% 
+# read OSEM
+OSEM_dir = f"/mnt/share-public/petric-wip/petric2/{phantom}/"
+OSEM_fname = f"{OSEM_dir}/OSEM_image"
+osem_arr = read_reconstructed_image(OSEM_fname)
+
+nnp = np.percentile(arr, 99.)
+up = nnp if nnp > up else up
+sup = nnp if nnp < sup else sup
+
 # %%
-# %%
-plt.subplots(2,2)
-slices = 96
-plt.suptitle(f'{phantom}: slice={slices} sfs=1e-1 {os.path.basename(fname)}')
+fig, other = plt.subplots(3,2)
+DATA_SLICES = extract_data_slices()
+slices = DATA_SLICES[phantom]['transverse_slice']
+# up = 0.9e-5
+top = sup
+plt.suptitle(f'{algo}/{phantom}: slice={slices} sfs=1e-1 up={top:.1e}')
 cmap = "magma"
-up = 0.3e-5
+
 for i, b in enumerate(betas):
-     ax = plt.subplot(2,2,i+1)
-     ax.imshow(recons[b][slices,:,:], cmap=cmap, vmax=up, vmin=lp)
+     ax = plt.subplot(3,2,i+1)
+     f = ax.imshow(recons[b][slices,:,:], cmap=cmap, vmax=top, vmin=lp)
      ax.set_title(f'Beta: {b}')
-     plt.colorbar(ax.imshow(recons[b][slices,:,:], cmap=cmap, vmax=up, vmin=lp), ax=ax)
+    #  plt.colorbar(
+    #      f, 
+    #      ax=ax)
      ax.axis('off')
+
+ax = plt.subplot(3,2,i+2)
+ax.imshow(osem_arr[slices,:,:], cmap=cmap, vmax=top, vmin=lp)
+ax.set_title(f'OSEM')
+# plt.colorbar(ax.imshow(osem_arr[slices,:,:], cmap=cmap, vmax=top, vmin=lp), ax=ax)
+ax.axis('off')
+ax = plt.subplot(3,2,i+3)
+ax.axis('off')
+
+cax = plt.axes([0.915, 0.02, 0.02, 0.907])  # Adjust the position of the colorbar
+fig.colorbar(f, orientation='vertical', 
+            #  use_gridspec=True,
+             cax=cax)
 plt.show()
 #%%
 
