@@ -36,7 +36,7 @@ OSEMdir = outdir / 'OSEM'
 datadir = outdir / 'BSREM'
 # we will check for images obtained after restarting BSREM (with new settings)
 datadir1 = outdir / 'BSREM_cont'
-# datadir = Path('/opt/runner/logs/Casper/BSREM/') / scanID
+# datadir = Path('/opt/runner/logs/2/Casper/BSREM/') / scanID
 OSEM_image = STIR.ImageData(str(datadir / 'iter_0000.hv'))
 
 settings = get_settings(scanID)
