@@ -298,8 +298,9 @@ DATA_SLICES = {
     'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
     'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
     'Siemens_mMR_ACR': {'transverse_slice': 99}, 'NeuroLF_Hoffman_Dataset': {'transverse_slice': 72},
-    'Mediso_NEMA_IQ': {'transverse_slice': 22, 'coronal_slice': 89, 'sagittal_slice': 66},
-    'Siemens_Vision600_thorax': {}, 'GE_DMI3_Torso': {}, 'Siemens_Vision600_Hoffman': {}, 'NeuroLF_Esser_Dataset': {},
+    'Mediso_NEMA_IQ': {'transverse_slice': 22, 'coronal_slice': 89,
+                       'sagittal_slice': 66}, 'Siemens_Vision600_thorax': {}, 'GE_DMI3_Torso': {'transverse_slice': 10},
+    'Siemens_Vision600_Hoffman': {}, 'NeuroLF_Esser_Dataset': {'transverse_slice': 20},
     'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}, 'GE_D690_NEMA_IQ': {'transverse_slice': 23},
     'Mediso_NEMA_IQ_lowcounts': {'transverse_slice': 22, 'coronal_slice': 74, 'sagittal_slice': 70},
     'GE_DMI4_NEMA_IQ': {'transverse_slice': 27, 'coronal_slice': 109, 'sagittal_slice': 78}}

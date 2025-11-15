@@ -16,9 +16,11 @@ Options:
   --transverse_slice=<i>  idx [default: -1]
   --coronal_slice=<c>    idx [default: -1]
   --sagittal_slice=<s>   idx [default: -1]
+  --vmax=<vmax>          max in colourbar [default: -1]
 
 Note that a slice index of -1 one means to use the dataset settings, and if those do not exist,
 use the middle of image.
+Similarly, if vmax = -1, use the dataset settings, and if it does not exist, use percentile of the max
 """
 # Copyright 2024-2025 University College London
 # Licence: Apache-2.0
@@ -235,6 +237,7 @@ def main(argv=None):
     slices["transverse_slice"] = literal_eval(args['--transverse_slice'])
     slices["coronal_slice"] = literal_eval(args['--coronal_slice'])
     slices["sagittal_slice"] = literal_eval(args['--sagittal_slice'])
+    vmax = literal_eval(args['--vmax'])
 
     if (dataset):
         if srcdir is None:
@@ -245,11 +248,16 @@ def main(argv=None):
                 slices[key] = settings.slices[key]
         if VOIdir is None:
             VOIdir = os.path.join(the_data_path(dataset), 'PETRIC')
+        if vmax <= 0:
+            vmax = settings.vmax
     else:
         if srcdir is None:
             srcdir = os.getcwd()
         if VOIdir is None:
             VOIdir = os.path.join(srcdir, 'PETRIC')
+
+    if vmax <= 0:
+        vmax = None # plot functions will use percentile
 
     if not skip_sino_profiles:
         acquired_data = STIR.AcquisitionData(os.path.join(srcdir, 'prompts.hs'))
@@ -262,9 +270,10 @@ def main(argv=None):
         check_values_non_negative(mult_factors.as_array(), "mult_factors")
         check_values_non_negative(background.as_array(), "background")
 
-    OSEM_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'OSEM_image'), **slices)
+    OSEM_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'OSEM_image'), **slices, vmax=vmax)
     check_and_plot_image_if_exists(os.path.join(srcdir, 'kappa'), **slices)
-    reference_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'PETRIC/reference_image'), **slices)
+    reference_image = check_and_plot_image_if_exists(os.path.join(srcdir, 'PETRIC/reference_image'), **slices,
+                                                     vmax=vmax)
 
     allVOInames = [os.path.basename(str(voi)[:-3]) for voi in Path(VOIdir).glob("VOI_*.hv")]
     VOIoutdir = os.path.join(srcdir, 'PETRIC')
