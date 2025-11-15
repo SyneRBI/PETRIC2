@@ -14,6 +14,8 @@ Options:
   --interval=<i>              interval to save [default: 3]
   --outreldir=<relpath>       optional relative path to override
                               (defaults to 'LBFGSBPC' or 'LBFGSBPC_cont' if initial_image is set)
+  --penalisation_factor_multiplier=<f> factor to multiply the default penalisation factor with [default: 1]
+                              (use with caution: You will likely want to specify outreldir)
 """
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024-2025 University College London
@@ -108,6 +110,7 @@ num_updates = int(args['--updates'])
 initial_image = args['--initial_image']
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
+beta_factor = float(args['--penalisation_factor_multiplier'])
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     PETRICDIR = Path('~/devel/PETRIC2').expanduser()
@@ -130,7 +133,11 @@ else:
     initial_image = STIR.ImageData(initial_image)
     outdir = outdir / ("LBFGSBPC_cont" if outreldir is None else outreldir)
 
-print("Penalisation factor:", data.prior.get_penalisation_factor())
+org_beta = data.prior.get_penalisation_factor()
+new_beta = org_beta * beta_factor
+data.prior.set_penalisation_factor(new_beta)
+
+print("Penalisation factor:", data.prior.get_penalisation_factor(), ' = ', org_beta, '*', beta_factor)
 print("num_updates:", num_updates)
 print("initial_image:", initial_image_name)
 print("outdir:", outdir)
