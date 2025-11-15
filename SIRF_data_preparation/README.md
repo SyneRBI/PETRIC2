@@ -6,8 +6,8 @@ Participants should never have to use these (unless you want to create your own 
 
 - `create_initial_images.py`: functions+script to run OSEM and compute the "kappa" image from existing data
 - `data_QC.py`: generates plots for QC
-- `plot_BSREM_metrics.py`: plot objective functions/metrics after a BSREM run
-- `run_BSREM.py` and `run_OSEM.py`: scripts to run these algorithms for a dataset
+- `plot_iterations.py`: plot objective functions/metrics after a run (needs editing before running)
+- `run_BSREM.py`, `run_LBFGSBPC.py` and `run_OSEM.py`: scripts to run these algorithms for a dataset
 - `run_bootstrap.sh`: script to generate a new data-set using (sinogram) bootstrapping
 
 ## Helpers
@@ -71,7 +71,7 @@ pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-Q
     ```
     python -m SIRF_data_preparation.run_BSREM  <datasetname>`
     ```
-12. Adapt [plot_BSREM_metrics.py](plot_BSREM_metrics.py) (probably only the `<datasetname>`) and run interactively.
+12. Adapt [plot_iterations.py](plot_iterations.py) (probably only the `<datasetname>`) and run interactively.
 13. Copy the BSREM ` iter_final` to `data/<datasetname>/PETRIC/reference_image`, e.g.
     ```
     stir_math data/<datasetname>/PETRIC/reference_image.hv output/<datasetname>/iter_final.hv
