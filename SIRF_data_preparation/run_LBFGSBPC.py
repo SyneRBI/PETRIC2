@@ -159,7 +159,7 @@ algo.set_preconditioner(precond)
 # %%
 algo.run(iterations=num_updates)
 # %%
-algo.get_output().write(str(outdir / "LBFGSBPC.hv"))
+algo.get_output().write(str(outdir / "iter_final.hv"))
 # %%
 cvswriter = csv.writer((outdir / 'objectives.csv').open("w", buffering=1))
 cvswriter.writerow(("iter", "objective"))
@@ -168,7 +168,7 @@ for i, l in zip(algo.iterations, algo.loss):
 
 # %%
 fig = plt.figure()
-data_QC.plot_image(algo.get_output(), **settings.slices, vmax=settings.get('vmax', None))
+data_QC.plot_image(algo.get_output(), **settings.slices, vmax=settings.vmax)
 fig.savefig(outdir / "LBFGSBPC_slices.png")
 # plt.show()
 # %%
