@@ -72,11 +72,10 @@ fig = plt.figure()
 plt.plot(objs[2:, 0], objs[2:, 1])
 # %%
 fig.savefig(outdir / f'{scanID}_{algoname}_objectives.png')
-# %%
-fig = plt.figure()
-plt.plot(objs[50:, 0], objs[50:, 1])
-# %%
-fig.savefig(outdir / f'{scanID}_{algoname}_objectives_last.png')
+# %% plot last 50 values
+# fig = plt.figure()
+# plt.plot(objs[50:, 0], objs[50:, 1])
+# fig.savefig(outdir / f'{scanID}_{algoname}_objectives_last.png')
 
 # %%
 qm = QualityMetrics(reference_image, data.whole_object_mask, data.background_mask, tb_summary_writer=None,
@@ -102,9 +101,9 @@ if False:
 fig = plt.figure()
 plot_metrics(iters, m, qm.keys(), f'_{algoname}')
 # plot_metrics(OSEMiters, OSEMm, qm.keys(), '_OSEM')
-[ax.set_xlim(0, 400) for ax in fig.axes]
+# [ax.set_xlim(0, 400) for ax in fig.axes]
 # %%
-fig.savefig(outdir / f'{scanID}_metrics_{algoname}_early.png')
+fig.savefig(outdir / f'{scanID}_metrics_{algoname}_fullrange.png')
 # %%
 fig = plt.figure()
 plot_metrics(iters, m, qm.keys(), f'_{algoname}')
@@ -129,7 +128,8 @@ if m1 is not None:
 
 # %%
 try:
-    idx = QualityMetrics.pass_index(m, numpy.array([.01, .01] + [.005 for i in range(len(data.voi_masks))]), 10)
+    idx = QualityMetrics.pass_index(m, numpy.array([.01, .01] + [.005 for i in range(len(data.voi_masks))]),
+                                    max(10 // iteration_interval, 2))
     iter = iters[idx]
     print('pass index: ', iter)
 except BaseException:
@@ -146,6 +146,6 @@ data_QC.plot_image(image - data.OSEM_image, **slices, vmin=-cmax / 50, vmax=cmax
 plt.savefig(outdir / f'{scanID}_OSEM_diff_image_{algoname}_{iter}.png')
 plt.figure()
 data_QC.plot_image(image - reference_image, **slices, vmin=-cmax / 100, vmax=cmax / 100)
-plt.savefig(outdir / f'{scanID}_ref_diff_image_{algoname}_{iter}')
+plt.savefig(outdir / f'{scanID}_ref_diff_image_{algoname}_{iter}.png')
 
 # %%
