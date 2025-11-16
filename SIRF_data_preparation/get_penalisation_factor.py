@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Find penalisation factor for one dataset based on another
+"""Find penalisation factor for one dataset based on another (but this doesn't work very well)
 
 Usage:
   get_penalisation_factor.py [--help | options]

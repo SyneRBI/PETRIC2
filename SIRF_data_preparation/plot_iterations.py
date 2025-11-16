@@ -3,22 +3,16 @@
 # %load_ext autoreload
 # %autoreload 2
 # %%
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 import numpy
 
 import sirf.STIR as STIR
 from petric import OUTDIR, SRCDIR, QualityMetrics, get_data
 from SIRF_data_preparation import data_QC
-from SIRF_data_preparation.data_utilities import the_data_path
 from SIRF_data_preparation.dataset_settings import get_settings
 from SIRF_data_preparation.evaluation_utilities import get_metrics, plot_metrics, read_objectives
 
 # %%
-if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/devel/PETRIC2').expanduser()
-    OUTDIR = PETRICDIR / 'output'
 STIR.AcquisitionData.set_storage_scheme('memory')
 STIR.set_verbosity(0)
 
@@ -32,7 +26,7 @@ scanID = 'Siemens_mMR_NEMA_IQ'
 # scanID = 'NeuroLF_Esser_Dataset'
 # scanID = 'Siemens_Vision600_ZrNEMAIQ'
 # scanID = 'GE_D690_NEMA_IQ'
-srcdir = the_data_path(scanID)
+srcdir = SRCDIR / scanID
 outdir = OUTDIR / scanID
 OSEMdir = outdir / 'OSEM'
 datadir = outdir / algoname

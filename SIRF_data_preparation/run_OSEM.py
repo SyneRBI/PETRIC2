@@ -12,8 +12,7 @@ Options:
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024 University College London
 # Licence: Apache-2.0
-__version__ = '0.2.0'
-from pathlib import Path
+__version__ = '0.3.0'
 
 import matplotlib.pyplot as plt
 from docopt import docopt
@@ -29,11 +28,6 @@ args = docopt(__doc__, argv=None, version=__version__)
 
 scanID = args['<data_set>']
 num_updates = int(args['--updates'])
-
-if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/devel/PETRIC').expanduser()
-    SRCDIR = PETRICDIR / 'data'
-    OUTDIR = PETRICDIR / 'output'
 
 outdir = OUTDIR / scanID / "OSEM"
 srcdir = SRCDIR / scanID

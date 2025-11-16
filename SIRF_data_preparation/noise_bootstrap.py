@@ -24,8 +24,7 @@ from docopt import docopt
 
 import sirf.STIR as STIR
 import SIRF_data_preparation.create_initial_images
-from petric import OUTDIR, Dataset, get_data
-from SIRF_data_preparation.data_utilities import the_data_path
+from petric import OUTDIR, SRCDIR, Dataset, get_data
 
 STIR.AcquisitionData.set_storage_scheme('memory')
 
@@ -58,7 +57,7 @@ def main(argv=None):
         outname = f"{dataset}_{scale_factor}"
 
     if srcdir is None:
-        srcdir = the_data_path(dataset)
+        srcdir = SRCDIR / dataset
         # settings = get_settings(dataset)
 
     outdir = OUTDIR / outname

@@ -37,9 +37,18 @@ from img_quality_cil_stir import ImageQualityCallback
 log = logging.getLogger('petric')
 TEAM = os.getenv("GITHUB_REPOSITORY", "SyneRBI/PETRIC-").split("/PETRIC-", 1)[-1]
 VERSION = os.getenv("GITHUB_REF_NAME", "")
-OUTDIR = Path(f"/logs/{TEAM}/{VERSION}" if TEAM and VERSION else "./output")
-if not (SRCDIR := Path("/mnt/share/petric")).is_dir():
-    SRCDIR = Path("./data")
+_repo_directory = Path(os.path.dirname(__file__))
+OUTDIR = os.getenv("PETRIC_OUTDIR")
+if OUTDIR is not None:
+    OUTDIR = Path(OUTDIR)
+else:
+    OUTDIR = Path(f"/logs/{TEAM}/{VERSION}") if TEAM and VERSION else (_repo_directory / "output")
+SRCDIR = os.getenv("PETRIC_SRCDIR")
+if SRCDIR is not None:
+    SRCDIR = Path(SRCDIR)
+else:
+    if not (SRCDIR := Path("/mnt/share-public/petric/2/")).is_dir(): # backend-location
+        SRCDIR = (_repo_directory / 'data')
 
 
 class Callback(cil_callbacks.Callback):

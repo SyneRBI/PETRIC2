@@ -2,39 +2,41 @@
 # Authors: Ashley Gillman, Kris Thielemans, Evgueni Ovtchinnikov
 # Licence: Apache-2.0
 # Copyright (C) 2021 Commonwealth Scientific and Industrial Research Organisation
-# Copyright (C) 2024 University College London
+# Copyright (C) 2024, 2025 University College London
 # Copyright (C) 2024 STFC, UK Research and Innovation
 import importlib
 import logging
 import os
 import shutil
 
+from petric import SRCDIR
+
 pet = importlib.import_module('sirf.STIR')
 
 pet.AcquisitionData.set_storage_scheme('memory')
 
-logger = logging.getLogger("PETRIC")
-# DATA_PATH = '/home/KrisThielemans/devel/PETRIC/data'
+logger = logging.getLogger("petric")
 this_directory = os.path.dirname(__file__)
 repo_directory = os.path.dirname(this_directory)
 ORG_DATA_PATH = os.path.join(repo_directory, 'orgdata')
-DATA_PATH = os.path.join(repo_directory, 'data')
 
 
-def the_data_path(*folders):
+def the_data_path(*folders) -> str:
     '''
-    Returns the path to data.
+    Returns the path (as str) for folders from petric.SRCDIR
 
-    data_type: subfolders like the_data_path('Siemens_mMR_ACR').
+    Example: the_data_path('Siemens_mMR_ACR', 'PETRIC').
     '''
-    return os.path.join(DATA_PATH, *folders)
+    return os.path.join(str(SRCDIR), *folders)
 
 
-def the_orgdata_path(*folders):
+def the_orgdata_path(*folders) -> str:
     '''
-    Returns the path to original data (for downloads/processing)
+    Returns the path to original data (for downloads/processing).
 
-    data_type: subfolders like the_orgdata_path('Siemens_mMR_ACR', 'processing').
+    Currently relative to the root of this repo / 'orgdata'.
+
+    Example: the_orgdata_path('Siemens_mMR_ACR', 'processing').
     '''
     return os.path.join(ORG_DATA_PATH, *folders)
 

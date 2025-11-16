@@ -23,7 +23,6 @@ Options:
 __version__ = '0.1.0'
 
 import csv
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import stir  # stir Python interface
@@ -111,11 +110,6 @@ initial_image = args['--initial_image']
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
 beta_factor = float(args['--penalisation_factor_multiplier'])
-
-if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/devel/PETRIC2').expanduser()
-    SRCDIR = PETRICDIR / 'data'
-    OUTDIR = PETRICDIR / 'output'
 
 outdir = OUTDIR / scanID
 srcdir = SRCDIR / scanID

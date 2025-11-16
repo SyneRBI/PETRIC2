@@ -247,7 +247,7 @@ def main(argv=None):
             if slices[key] == -1 and key in settings.slices:
                 slices[key] = settings.slices[key]
         if VOIdir is None:
-            VOIdir = os.path.join(the_data_path(dataset), 'PETRIC')
+            VOIdir = the_data_path(dataset, 'PETRIC')
         if vmax <= 0:
             vmax = settings.vmax
     else:

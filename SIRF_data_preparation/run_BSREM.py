@@ -22,9 +22,7 @@ Options:
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024 University College London
 # Licence: Apache-2.0
-__version__ = '0.4.0'
-
-from pathlib import Path
+__version__ = '0.5.0'
 
 import matplotlib.pyplot as plt
 from docopt import docopt
@@ -48,11 +46,6 @@ initial_step_size = float(args['--initial_step_size'])
 relaxation_eta = float(args['--relaxation_eta'])
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
-
-if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/devel/PETRIC').expanduser()
-    SRCDIR = PETRICDIR / 'data'
-    OUTDIR = PETRICDIR / 'output'
 
 outdir = OUTDIR / scanID
 srcdir = SRCDIR / scanID
