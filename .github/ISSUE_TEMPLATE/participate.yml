@@ -23,5 +23,5 @@ body:
     options:
     - label: (Optional) I want to be eligible for prizes, and will make my code public after the challenge ends.
       required: false
-    - label: I agree to abide by the [rules](https://github.com/SyneRBI/PETRIC/wiki).
+    - label: I agree to abide by the [rules](https://github.com/SyneRBI/PETRIC2/wiki).
       required: true
