@@ -1,5 +1,21 @@
+#!/usr/bin/env python
+r"""
+Preliminary file to check evolution of metrics as well as pass_index
+
+Usage:
+  plot_iterations [options]
+
+Options:
+  -h, --help
+  -h, --help
+  --dataset=<name>    dataset name
+  --algo_name=<a>    name of algorithm/subfolder with iter*.hv
+"""
+# Copyright 2024-2025 University College London
+# Licence: Apache-2.0
+__version__ = '0.5.0'
+
 # %%
-# """Preliminary file to check evolution of metrics as well as pass_index"""
 # %load_ext autoreload
 # %autoreload 2
 # %%
@@ -7,6 +23,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy
+from docopt import docopt
 
 import sirf.STIR as STIR
 from petric import OUTDIR, SRCDIR, QualityMetrics, get_data
@@ -21,17 +38,22 @@ if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     OUTDIR = PETRICDIR / 'output'
 STIR.AcquisitionData.set_storage_scheme('memory')
 STIR.set_verbosity(0)
-
-algoname = 'LBFGSBPC'
-
-# scanID = 'Siemens_Vision600_thorax'
-# scanID = 'NeuroLF_Hoffman_Dataset'
-scanID = 'Siemens_mMR_NEMA_IQ'
-# scanID = 'Mediso_NEMA_IQ'
-# scanID = 'Siemens_Vision600_Hoffman'
-# scanID = 'NeuroLF_Esser_Dataset'
-# scanID = 'Siemens_Vision600_ZrNEMAIQ'
-# scanID = 'GE_D690_NEMA_IQ'
+# %%
+if __name__ == '__main__':
+    args = docopt(__doc__, version=__version__)
+    scanID = args['--dataset']
+    algoname = args['--algo_name']
+else:
+    algoname = 'LBFGSBPC0.5'
+    # scanID = 'Siemens_Vision600_thorax'
+    # scanID = 'NeuroLF_Hoffman_Dataset'
+    scanID = 'Siemens_mMR_NEMA_IQ'
+    # scanID = 'Mediso_NEMA_IQ'
+    # scanID = 'Siemens_Vision600_Hoffman'
+    # scanID = 'NeuroLF_Esser_Dataset'
+    # scanID = 'Siemens_Vision600_ZrNEMAIQ'
+    # scanID = 'GE_D690_NEMA_IQ'
+# %%
 srcdir = the_data_path(scanID)
 outdir = OUTDIR / scanID
 OSEMdir = outdir / 'OSEM'
