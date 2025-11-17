@@ -114,7 +114,7 @@ class StatsLog(Callback):
 
 
 class QualityMetrics(ImageQualityCallback, Callback):
-    """From https://github.com/SyneRBI/PETRIC/wiki#metrics-and-thresholds"""
+    """From https://github.com/SyneRBI/PETRIC2/wiki#metrics-and-thresholds"""
     THRESHOLD = {"AEM_VOI": 0.005, "RMSE_whole_object": 0.01, "RMSE_background": 0.01}
 
     def __init__(self, reference_image, whole_object_mask, background_mask, interval: int = 1,
