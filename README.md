@@ -73,7 +73,7 @@ The organisers will execute (after installing [nvidia-docker](https://docs.nvidi
 # 2. mount `.` to container `/workdir`:
 docker run --rm -it --gpus all -p 6006:6006 \
   -v /path/to/data:/mnt/share/petric:ro \
-  -v .:/workdir -w /workdir synerbi/sirf:petric2 /bin/bash
+  -v .:/workdir -w /workdir ghcr.io/synerbi/sirf:petric2 /bin/bash
 # 1. optionally, conda/pip/apt install environment.yml/requirements.txt/apt.txt
 # 2. run your submission
 python petric.py &
