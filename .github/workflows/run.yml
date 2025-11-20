@@ -8,7 +8,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/synerbi/sirf:petric2
+      image: ghcr.io/synerbi/sirf:petric2-base
       options: --user root  # https://github.com/actions/checkout/issues/956
     steps:
     - uses: actions/checkout@v4
