@@ -7,15 +7,24 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    container:
+    env:
+      dataset: Siemens_mMR_NEMA_IQ
       image: ghcr.io/synerbi/sirf:petric2-base
-      options: --user root  # https://github.com/actions/checkout/issues/956
     steps:
-    - uses: actions/checkout@v4
-    - name: Install dependencies
-      shell: bash -el {0}
+    - uses: actions/checkout@v5
+    - uses: jlumbroso/free-disk-space@v1.3.1
+      with: {docker-images: false, tool-cache: true}
+    - name: Download test data
       run: |
+        curl -fsSLO https://petric.tomography.stfc.ac.uk/data-raw/2/${dataset}.zip
+        mkdir -p data; cd data; unzip -u ../${dataset}.zip
+    - run: docker pull ${image}
+    - name: test
+      run: |
+        docker run --rm --user $(id -u):$(id -g) --group-add users -i -v .:/w -w /w ${image} bash <<EOD
         source /opt/SIRF-SuperBuild/INSTALL/bin/env_sirf.sh
+
+        # Install dependencies
         pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics
         if test -f apt.txt; then
           sudo apt-get update
@@ -29,20 +38,13 @@ jobs:
           pip install -r requirements.txt
         fi
         conda list
-    - name: Download test data
-      run: |
-        curl -fsSLO https://petric.tomography.stfc.ac.uk/data-raw/2/${dataset}.zip
-        mkdir -p data; cd data; unzip -u ../${dataset}.zip
-      env:
-        dataset: Siemens_mMR_NEMA_IQ
-    - name: Test imports
-      shell: bash -el {0}
-      run: |
-        source /opt/SIRF-SuperBuild/INSTALL/bin/env_sirf.sh
+
         # overwrite any potential user changes
         curl -fsSLO https://raw.githubusercontent.com/SyneRBI/PETRIC2/main/petric.py
         # ensure main.py exists
         test -f main.py || ln -s main_ISTA.py main.py
+
+        # Test imports
         python <<EOF
         import petric
         from main import Submission, submission_callbacks
@@ -67,10 +69,11 @@ jobs:
             except Exception:
                 warn("Submission.run failed", RuntimeWarning, stacklevel=2)
         EOF
+        EOD
   full:
     if: startsWith(github.ref, 'refs/tags')
     runs-on: [self-hosted, docker, cuda]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with: {fetch-depth: 0, submodules: recursive}
     - run: petric
