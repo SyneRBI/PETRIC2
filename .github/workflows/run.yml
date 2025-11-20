@@ -29,14 +29,19 @@ jobs:
           pip install -r requirements.txt
         fi
         conda list
+    - name: Download test data
+      run: |
+        curl -fsSLO https://petric.tomography.stfc.ac.uk/data-raw/2/${dataset}.zip
+        mkdir -p data; cd data; unzip -u ../${dataset}.zip
+      env:
+        dataset: Siemens_mMR_NEMA_IQ
     - name: Test imports
       shell: bash -el {0}
       run: |
         source /opt/SIRF-SuperBuild/INSTALL/bin/env_sirf.sh
-        dataset=Siemens_mMR_NEMA_IQ
-        curl -sfSL -o  ${dataset}.zip https://petric.tomography.stfc.ac.uk/2/data/${dataset}.zip
-        mkdir -p data; cd data; unzip -u ../${dataset}.zip; cd ..
-        curl -fsSL https://raw.githubusercontent.com/SyneRBI/PETRIC2/main/petric.py > petric.py
+        # overwrite any potential user changes
+        curl -fsSLO https://raw.githubusercontent.com/SyneRBI/PETRIC2/main/petric.py
+        # ensure main.py exists
         test -f main.py || ln -s main_ISTA.py main.py
         python <<EOF
         import petric
