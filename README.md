@@ -68,24 +68,21 @@ You can also find some example notebooks here which should help you with your de
 
 The organisers will execute (after installing [nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) & downloading <https://petric.tomography.stfc.ac.uk/2/data/> to `/path/to/data`):
 
-<!-- TODO: use synerbi/sirf:latest-gpu after the next SIRF release -->
-
 ```sh
 # 1. git clone & cd to your submission repository
 # 2. mount `.` to container `/workdir`:
 docker run --rm -it --gpus all -p 6006:6006 \
   -v /path/to/data:/mnt/share/petric:ro \
-  -v .:/workdir -w /workdir synerbi/sirf:edge-gpu /bin/bash
-# 3. install metrics & GPU libraries
-conda install -y tensorboard tensorboardx jupytext
-pip install git+https://github.com/Project-MONAI/MONAI@1.5.1 torch tensorflow[and-cuda]==2.20 --extra-index-url https://download.pytorch.org/whl/cu128
-pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics
-# 4. optionally, conda/pip/apt install environment.yml/requirements.txt/apt.txt
-# 5. run your submission
+  -v .:/workdir -w /workdir synerbi/sirf:petric2 /bin/bash
+# 1. optionally, conda/pip/apt install environment.yml/requirements.txt/apt.txt
+# 2. run your submission
 python petric.py &
-# 6. optionally, serve logs at <http://localhost:6006>
+# 3. optionally, serve logs at <http://localhost:6006>
 tensorboard --bind_all --port 6006 --logdir ./output
 ```
+
+> [!NOTE]
+> [The docker image](https://github.com/SyneRBI/PETRIC-backend/blob/main/Dockerfile) includes Python3.12, SIRF, CIL, [MONAI](https://github.com/Project-MONAI/MONAI), Torch, TensorFlow, and [Stochastic-QualityMetrics](https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics).
 
 ## FAQ
 
