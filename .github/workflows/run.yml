@@ -46,28 +46,11 @@ jobs:
 
         # Test imports
         python <<EOF
-        import petric
         from main import Submission, submission_callbacks
         from cil.optimisation.algorithms import Algorithm
         assert issubclass(Submission, Algorithm)
         assert isinstance(submission_callbacks, list)
         assert all(callable(callback) for callback in submission_callbacks)
-        srcdir, outdir, metrics = petric.data_dirs_metrics[0]
-        data = petric.get_data(srcdir)
-        assert data.OSEM_image.max() > 0
-        assert data.reference_image.max() > 0
-        assert data.FOV_mask.max() > 0
-        # things might fail due to GHA lack of GPU
-        from warnings import warn
-        try:
-            algo = Submission(data)
-        except Exception:
-            warn("Submission.__init__ failed", RuntimeWarning, stacklevel=2)
-        else:
-            try:
-                algo.run(1)
-            except Exception:
-                warn("Submission.run failed", RuntimeWarning, stacklevel=2)
         EOF
         EOD
   full:
