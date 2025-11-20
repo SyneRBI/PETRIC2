@@ -55,6 +55,17 @@ jobs:
         assert data.OSEM_image.max() > 0
         assert data.reference_image.max() > 0
         assert data.FOV_mask.max() > 0
+        # things might fail due to GHA lack of GPU
+        from warnings import warn
+        try:
+            algo = Submission(data)
+        except Exception:
+            warn("Submission.__init__ failed", RuntimeWarning, stacklevel=2)
+        else:
+            try:
+                algo.run(1)
+            except Exception:
+                warn("Submission.run failed", RuntimeWarning, stacklevel=2)
         EOF
   full:
     if: startsWith(github.ref, 'refs/tags')
