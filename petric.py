@@ -35,7 +35,7 @@ from cil.optimisation.utilities import callbacks as cil_callbacks
 from img_quality_cil_stir import ImageQualityCallback
 
 log = logging.getLogger('petric')
-TEAM = os.getenv("GITHUB_REPOSITORY", "SyneRBI/PETRIC-").split("/PETRIC-", 1)[-1]
+TEAM = re.split("/PETRIC[0-9]*-?", os.getenv("GITHUB_REPOSITORY", ""), 1)[-1] or "SyneRBI"
 VERSION = os.getenv("GITHUB_REF_NAME", "")
 _petric_path = Path(__file__).parent
 OUTDIR = Path(os.getenv("PETRIC_OUTDIR", f"/logs/{TEAM}/{VERSION}" if TEAM and VERSION else _petric_path / "output"))
