@@ -184,7 +184,7 @@ class QualityMetrics(ImageQualityCallback, Callback):
 
 class MetricsWithTimeout(Callback):
     """Stops the algorithm after `seconds`"""
-    def __init__(self, seconds=3600, outdir=OUTDIR, transverse_slice=None, coronal_slice=None, sagittal_slice=None,
+    def __init__(self, seconds=600, outdir=OUTDIR, transverse_slice=None, coronal_slice=None, sagittal_slice=None,
                  tqdm_class=tqdm, **kwargs):
         super().__init__(**kwargs)
         self._seconds = seconds
