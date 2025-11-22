@@ -1,20 +1,24 @@
 # PETRIC 2: Second PET Rapid Image reconstruction Challenge
 
+[![website](https://img.shields.io/badge/announcement-website-purple?logo=workplace&logoColor=white)](https://www.ccpsynerbi.ac.uk/events/petric2/)
 [![wiki](https://img.shields.io/badge/details-wiki-blue?logo=googledocs&logoColor=white)][wiki]
+[![register](https://img.shields.io/badge/participate-register-green?logo=ticktick&logoColor=white)][register]
 [![leaderboard](https://img.shields.io/badge/rankings-leaderboard-orange?logo=tensorflow&logoColor=white)][leaderboard]
 [![discord](https://img.shields.io/badge/chat-discord-blue?logo=discord&logoColor=white)](https://discord.gg/Ayd72Aa4ry)
 
-## Welcome to PETRIC 2!
+## Participating
 
-(If you have not heard about PETRIC before, you can find out about it [here](https://github.com/SyneRBI/PETRIC).)
+The organisers will provide GPU-enabled cloud runners which have access to larger private datasets for evaluation. To gain access, you must [register]. The organisers will then create a private team submission repository for you.
+
+[register]: https://github.com/SyneRBI/PETRIC/issues/new/choose
 
 ## What's the same?
-We are going to solve a maximum a-posteriori estimate (MAP) using the smoothed relative difference prior (RDP) reconstruction problem and the aim of the challenge is to reach the target image quality as fast as possible.
-We will provide you with PET sinogram phantom data from different scanners and an example repository on GitHub with an implementation of a reference algorithm.
-There will be a leaderboard which is continuously updated to make sure you know how you are doing.
+As with [the previous challenge (PETRIC1)](https://github.com/SyneRBI/PETRIC), the goal is to solve a maximum a-posteriori (MAP) estimate using a smoothed relative difference prior (RDP), reaching the target image quality as fast as possible.
+We provide PET sinogram phantom data from different scanners and private repository on GitHub with an implementation of some reference algorithms.
+A live leaderboard which is continuously updated to track your progress.
 
 ## What's new?
-This time we are going to make things more challenging! The PET sinogram data will be created from fewer counts which means your algorithm will have to cope with more noise in the data. For more information on the new data please go to [wiki/data](https://github.com/SyneRBI/PETRIC2/wiki#data).
+It's more challenging! The PET sinogram data has fewer counts, meaning algorithms will have to cope with more noise. For more information on the new data, see [wiki/data](https://github.com/SyneRBI/PETRIC2/wiki#data).
 
 In addition to the more challenging data, we have improved our reconstruction software. STIR 6.3 was released which has lots of new features including new analytic reconstruction methods, better GPU support and improved support for reading raw data formats. For more information have a look at the [release notes](https://rawcdn.githack.com/UCL/STIR/c4f12cfc23d5cc85636bc7dedf864ec6c170ec71/documentation/release_6.3.htm). On the SIRF side we focused on speed! We improved the acquisition and image algebra to speed up things by a factor of 3 and optimised our Python interface to ensure we provide data views rather than copying things around. Have a look at the [SIRF 3.9 relase notes](https://github.com/SyneRBI/SIRF/blob/1ba1f9f4f56dfe5ebf1cec5c67d1773056102ae6/CHANGES.md) for more information.
 
