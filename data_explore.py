@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import numpy as np
 from extract_data_slices import extract_data_slices
-from SIRF_data_preparation.preferred_scaling import preferred_scaling
+# from SIRF_data_preparation.preferred_scaling import preferred_scaling
+from SIRF_data_preparation.dataset_settings import get_settings, preferred_scaling
 
 def read_interfile_header(fname):
     """"""""
@@ -25,10 +26,10 @@ def read_interfile_header(fname):
 
 
 iter = 400
-num_phantom = 0
+num_phantom = 3
 beta = 1
-phantoms = ['Siemens_mMR_ACR', 'Siemens_mMR_NEMA_IQ', 'GE_D690_NEMA_IQ']
-shapes = [(127, 285, 285), (127, 200, 200), (127, 344, 344)]
+phantoms = ['Siemens_mMR_ACR', 'Siemens_mMR_NEMA_IQ', 'GE_D690_NEMA_IQ', 'Siemens_Vision600_Hoffman']
+shapes = [(127, 285, 285), (127, 200, 200), (127, 344, 344), (127, 344, 344)]
 phantom = phantoms[num_phantom]
 
 # algo = 'LBFGSBPC'
@@ -61,45 +62,60 @@ def read_reconstructed_image(fname):
 recons = {}
 up = 0
 sup = np.inf
-betas = [1] * 3
+betas = [1,1.75, 2]
+
 # betas = ["1","1e-1","1e-2"]
 for b in betas:
     dirname = f'output/{phantom}/{algo}/{b}/'
-    fname = f'{dirname}/{algo}'
+    if b == 1.75:
+        print("WTF")
+        fname = f'{dirname}/{algo}'
+        fname += '_iter0400.npy'
+        arr = np.load(fname)
+    else:
+        fname = f'{dirname}/{algo}'
+        arr = read_reconstructed_image(fname)
     print (fname)
-
-    arr = read_reconstructed_image(fname)
-    print (fname, arr.shape, arr.min(), arr.max())
     recons[b] = arr
 
     lp = 0
-    nnp = np.percentile(arr, 99.9)
+    nnp = np.percentile(arr, 97.5)
     up = nnp if nnp > up else up
     sup = nnp if nnp < sup else sup
+    print (fname, arr.shape, arr.min(), arr.max(), nnp)
+    
+    print("------------------------------------")
 # up = 0.0027166688
 print(f"lp {lp}, up {up}, sup {sup}")
 #%% 
 # read OSEM
-OSEM_dir = f"/mnt/share-public/petric-wip/petric2/{phantom}/"
+OSEM_dir = f"/mnt/share-public/petric/wip/petric2/{phantom}/"
 OSEM_fname = f"{OSEM_dir}/OSEM_image"
 osem_arr = read_reconstructed_image(OSEM_fname)
-
+print (OSEM_fname, osem_arr.shape, osem_arr.min(), osem_arr.max())
 # nnp = np.percentile(arr, 99.)
 # up = nnp if nnp > up else up
 # sup = nnp if nnp < sup else sup
 
 
 #%%
-fig, other = plt.subplots(2,2, figsize=(8,12))
+ncol = 2
+nrow = int(np.ceil((len(betas)+1)/ncol))
+
+fig, other = plt.subplots(nrow, ncol, figsize=(4*ncol,4*nrow))
 DATA_SLICES = extract_data_slices()
-slices = DATA_SLICES[phantom]['transverse_slice']
+slices = 72
+# slices = DATA_SLICES[phantom]['transverse_slice']
+# slices = get_settings(phantom).slices
 # up = 0.9e-5
-top = up
-plt.suptitle(f'{algo}/{phantom}: slice={slices} sfs=1e-1 up={top:.1e}')
+top = get_settings(phantom).vmax
+# top = 0.3
+sfs = preferred_scaling[phantom]
+plt.suptitle(f'{algo}/{phantom}: slice={slices} sfs={sfs} up={top:.1e}')
 cmap = "magma"
 
 for i, b in enumerate(betas):
-     ax = plt.subplot(2,2,i+1)
+     ax = plt.subplot(nrow,ncol,i+1)
      f = ax.imshow(recons[b][slices,:,:], cmap=cmap, vmax=top, vmin=lp)
      ax.set_title(f'Beta: {b}')
     #  plt.colorbar(
@@ -107,7 +123,12 @@ for i, b in enumerate(betas):
     #      ax=ax)
      ax.axis('off')
 
-ax = plt.subplot(2,2,i+2)
+ax = plt.subplot(nrow,ncol,i+2)
+# diff = (recons[2][slices,:,:]-recons[1][slices,:,:])
+# clim = np.max(np.abs(diff))
+# f = ax.imshow(diff, cmap="seismic", vmin=-clim, vmax=clim)
+# ax.set_title(f'diff Beta {betas[2]} - Beta {betas[1]}')
+
 ax.imshow(osem_arr[slices,:,:], cmap=cmap, vmax=top, vmin=lp)
 ax.set_title(f'OSEM')
 # plt.colorbar(ax.imshow(osem_arr[slices,:,:], cmap=cmap, vmax=top, vmin=lp), ax=ax)

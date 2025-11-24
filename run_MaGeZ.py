@@ -63,9 +63,10 @@ print(f"{OUTDIR}", OUTDIR.is_dir())
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     PETRICDIR = Path('~/PETRIC2').expanduser()
-    # SRCDIR = PETRICDIR / 'data'
-    SRCDIR = Path("/data/petric2")
+    SRCDIR = PETRICDIR / 'data'
+    SRCDIR = Path("/data/wip/petric2")
     OUTDIR = PETRICDIR / 'output'
+    print(f"Adjusted SRCDIR to {SRCDIR}")
 
 outdir = OUTDIR / scanID
 srcdir = SRCDIR / scanID
@@ -92,27 +93,16 @@ outdir = outdir / beta
 os.makedirs(outdir, exist_ok=True)
 
 
-print("Penalisation factor:", data.prior.get_penalisation_factor())
+
 print("num_updates:", num_updates)
 print("initial_image:", initial_image_name)
 print("outdir:", outdir)
 print("interval:", interval)
-
+print("Penalisation factor:", data.prior.get_penalisation_factor())
 petric1_beta = data.prior.get_penalisation_factor()
-data.prior.set_penalisation_factor(float(beta) * petric1_beta * sfs)
+data.prior.set_penalisation_factor(float(beta) * petric1_beta)
 print("Rescaled penalisation factor:", data.prior.get_penalisation_factor())
 
-# num_subsets=1
-# _, _, obj_funs = partitioner.data_partition(data.acquired_data, data.additive_term, data.mult_factors,
-#                                                     num_subsets,
-#                                                     initial_image=data.OSEM_image)
-# obj_fun = obj_funs[0]
-# data.prior.set_up(data.OSEM_image)
-# # acq_model = acq_models[0]
-# obj_fun.set_prior(data.prior)
-
-# algo = LBFGSBPC(obj_fun, initial=initial_image, update_objective_interval=interval, 
-#                 write_at_interval=True, outdir=outdir)
 
 algo = MaGeZ(data, update_objective_interval=interval,)
 # %%
@@ -131,7 +121,8 @@ class SaveNpyCallback(callbacks.Callback):
             print(f"Saved numpy array to {npy_path}")
 
 cb = SaveNpyCallback(outdir, interval)
-algo.run(iterations=num_updates+1, callbacks=[cb])
+algo.run(iterations=num_updates+1, callbacks=[cb, 
+                                              callbacks.TextProgressCallback()])
 # %%
 
 algo.get_output().write(str(outdir / "MaGeZ.hv"))

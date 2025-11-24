@@ -1,6 +1,7 @@
 services:
   petric:
-    image: synerbi/jupyter:sirf-build-gpu
+    # image: synerbi/jupyter:sirf-build-gpu
+    image: ghcr.io/synerbi/sirf:petric2
     container_name: petric-container
     volumes:
       - /home/ubuntu/devel/PETRIC2:/home/jovyan/PETRIC2:rw
