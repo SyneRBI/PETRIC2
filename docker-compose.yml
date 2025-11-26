@@ -1,12 +1,14 @@
 services:
   petric:
-    # image: synerbi/jupyter:sirf-build-gpu
-    image: ghcr.io/synerbi/sirf:petric2
+    image: petric2-magez
+    # image: ghcr.io/synerbi/sirf:petric2
     container_name: petric-container
     volumes:
-      - /home/ubuntu/devel/PETRIC2:/home/jovyan/PETRIC2:rw
+      - /opt/edo/PETRIC2:/home/jovyan/PETRIC2:rw
       - /mnt/share-public/petric:/data
       - /mnt/share-public/petric/wip/petric2/:/data/petric2
+    ports:
+      - "8888:8888"
     restart: unless-stopped
     deploy:
       resources:
