@@ -12,6 +12,9 @@ Options:
   --updates=<u>               number of updates to run [default: 15000]
   --initial_image=<filename>  optional initial image, normally the OSEM_image from get_data.
 
+  --initial_FWHM=<f>          optional FWHM of 3D Gaussian filter, [default: 0]
+  --penalisation_factor_multiplier=<f> factor to multiply the default penalisation factor with [default: 1]
+                              (use with caution: You will likely want to specify outreldir)
   --num_subsets=<n>           number of subsets. If not specified, will use dataset_settings.get_settings.
   --initial_step_size=<s>     start stepsize [default: .3]
   --relaxation_eta=<r>        relaxation factor per epoch [default: .01]
@@ -20,9 +23,8 @@ Options:
                               (defaults to 'BSREM' or 'BSREM_cont' if initial_image is set)
 """
 # Copyright 2024 Rutherford Appleton Laboratory STFC
-# Copyright 2024 University College London
 # Licence: Apache-2.0
-__version__ = '0.5.0'
+__version__ = '0.6.0'
 
 import matplotlib.pyplot as plt
 from docopt import docopt
@@ -41,6 +43,8 @@ args = docopt(__doc__, argv=None, version=__version__)
 scanID = args['<data_set>']
 num_updates = int(args['--updates'])
 initial_image = args['--initial_image']
+beta_factor = float(args['--penalisation_factor_multiplier'])
+FWHM = float(args['--initial_FWHM'])
 num_subsets = args['--num_subsets']
 initial_step_size = float(args['--initial_step_size'])
 relaxation_eta = float(args['--relaxation_eta'])
@@ -64,10 +68,20 @@ else:
     initial_image = STIR.ImageData(initial_image)
     outdir = outdir / ("BSREM_cont" if outreldir is None else outreldir)
 
-print("Penalisation factor:", data.prior.get_penalisation_factor())
+if FWHM > 0:
+    filter = STIR.SeparableGaussianImageFilter()
+    filter.set_fwhms((FWHM, FWHM, FWHM))
+    filter.apply(initial_image)
+
+org_beta = data.prior.get_penalisation_factor()
+new_beta = org_beta * beta_factor
+data.prior.set_penalisation_factor(new_beta)
+
+print("Penalisation factor:", data.prior.get_penalisation_factor(), ' = ', org_beta, '*', beta_factor)
 print("num_subsets:", num_subsets)
 print("num_updates:", num_updates)
 print("initial_image:", initial_image_name)
+print("FWHM of Gaussian filter:", FWHM)
 print("outdir:", outdir)
 print("initial_step_size:", initial_step_size)
 print("relaxation_eta:", relaxation_eta)
@@ -89,6 +103,6 @@ algo.run(num_updates,
          callbacks=[MetricsWithTimeout(**settings.slices, interval=interval, outdir=outdir, seconds=3600 * 100)])
 # %%
 fig = plt.figure()
-data_QC.plot_image(algo.get_output(), **settings.slices)
+data_QC.plot_image(algo.get_output(), **settings.slices, vmax=settings.vmax)
 fig.savefig(outdir / "BSREM_slices.png")
 # plt.show()
