@@ -1,7 +1,8 @@
 """Settings for recon and display used in the data preparation"""
 from dataclasses import dataclass
 
-from petric import DATA_SLICES
+from extract_data_slices import extract_data_slices
+DATA_SLICES = extract_data_slices()
 
 DATA_SUBSETS = {
     'Siemens_mMR_NEMA_IQ': 7, 'Siemens_mMR_NEMA_IQ_lowcounts': 7, 'Siemens_mMR_ACR': 7, 'NeuroLF_Hoffman_Dataset': 16,
