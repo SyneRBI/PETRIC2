@@ -4,11 +4,13 @@ services:
     # image: ghcr.io/synerbi/sirf:petric2
     container_name: petric-container
     volumes:
-      - /opt/edo/PETRIC2:/home/jovyan/PETRIC2:rw
+      - /opt/edo/:/home/jovyan/workdir:rw
       - /mnt/share-public/petric:/data
       - /mnt/share-public/petric/wip/petric2/:/data/petric2
     ports:
       - "8888:8888"
+    group_add: 
+      - "27"
     restart: unless-stopped
     deploy:
       resources:
