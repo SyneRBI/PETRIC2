@@ -54,18 +54,22 @@ num_updates = int(args['--updates'])
 initial_image = args['--initial_image']
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
-beta = args['--beta']
+_beta = args['--beta']
 sfs = float(preferred_scaling[scanID])
-
+betas = _beta.split(',')
+# Override petric's default
+# OUTDIR = Path("../output")
 
 print(f"{SRCDIR}", SRCDIR.is_dir())
 print(f"{OUTDIR}", OUTDIR.is_dir())
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/PETRIC2').expanduser()
+    PETRICDIR = Path('~/workdir/PETRIC2').expanduser()
     SRCDIR = PETRICDIR / 'data'
     SRCDIR = Path("/data/wip/petric2")
     OUTDIR = PETRICDIR / 'output'
+    # Override petric's default
+    # OUTDIR = Path("/output")
     print(f"Adjusted SRCDIR to {SRCDIR}")
 
 outdir = OUTDIR / scanID
@@ -87,25 +91,8 @@ else:
     initial_image_name = initial_image
     initial_image = STIR.ImageData(initial_image)
     outdir = outdir / ("MaGeZ_cont" if outreldir is None else outreldir)
-outdir = outdir / beta
-
-# create output directory if not there
-os.makedirs(outdir, exist_ok=True)
 
 
-
-print("num_updates:", num_updates)
-print("initial_image:", initial_image_name)
-print("outdir:", outdir)
-print("interval:", interval)
-print("Penalisation factor:", data.prior.get_penalisation_factor())
-petric1_beta = data.prior.get_penalisation_factor()
-data.prior.set_penalisation_factor(float(beta) * petric1_beta)
-print("Rescaled penalisation factor:", data.prior.get_penalisation_factor())
-
-
-algo = MaGeZ(data, update_objective_interval=interval,)
-# %%
 from cil.optimisation.utilities import callbacks
 class SaveNpyCallback(callbacks.Callback):
     def __init__(self, outdir, interval):
@@ -119,27 +106,51 @@ class SaveNpyCallback(callbacks.Callback):
             npy_path = self.outdir / f"MaGeZ_iter{iter_num:04d}.npy"
             numpy.save(npy_path, array)
             print(f"Saved numpy array to {npy_path}")
+# create output directory if not there
+os.makedirs(outdir, exist_ok=True)
 
-cb = SaveNpyCallback(outdir, interval)
-algo.run(iterations=num_updates+1, callbacks=[cb, 
-                                              callbacks.TextProgressCallback()])
-# %%
+petric1_beta = data.prior.get_penalisation_factor()
 
-algo.get_output().write(str(outdir / "MaGeZ.hv"))
-# %%
-csv = csv.writer((outdir / 'objectives.csv').open("w", buffering=1))
-csv.writerow(("iter", "objective"))
-for i,l in zip(algo.iterations, algo.loss):
-    csv.writerow((i,l))
+print("Original Penalisation factor:", petric1_beta, flush=True)
 
-# %%
-fig = plt.figure()
-data_QC.plot_image(algo.get_output(), **settings.slices)
-fig.savefig(outdir / "MaGeZ_slices.png")
-# plt.show()
-# %%
-print(algo.iterations)
-print(algo.loss)
-fig = plt.figure()
-plt.plot(algo.iterations, algo.loss)
-fig.savefig(outdir / "MaGeZ_objective.png")
+for beta in betas:
+
+    b_outdir = outdir / beta
+    os.makedirs(b_outdir, exist_ok=True)
+
+    print("num_updates:", num_updates, flush=True)
+    print("initial_image:", initial_image_name, flush=True)
+    print("outdir:", b_outdir, flush=True)
+    print("interval:", interval, flush=True)
+    print("Penalisation factor:", data.prior.get_penalisation_factor(), flush=True)
+    data.prior.set_penalisation_factor(float(beta) * petric1_beta)
+    print("Rescaled penalisation factor:", data.prior.get_penalisation_factor(), flush=True)
+
+
+    algo = MaGeZ(data, update_objective_interval=interval,)
+    # %%
+    
+
+    cb = SaveNpyCallback(b_outdir, interval)
+    algo.run(iterations=num_updates+1, callbacks=[cb, 
+                                                callbacks.TextProgressCallback()])
+    # %%
+
+    algo.get_output().write(str(b_outdir / "MaGeZ.hv"))
+    # %%
+    writer = csv.writer((b_outdir / 'objectives.csv').open("w", buffering=1))
+    writer.writerow(("iter", "objective"))
+    for i,l in zip(algo.iterations, algo.loss):
+        writer.writerow((i,l))
+
+    # %%
+    fig = plt.figure()
+    data_QC.plot_image(algo.get_output(), **settings.slices)
+    fig.savefig(b_outdir / "MaGeZ_slices.png")
+    # plt.show()
+    # %%
+    print(algo.iterations)
+    print(algo.loss)
+    fig = plt.figure()
+    plt.plot(algo.iterations, algo.loss)
+    fig.savefig(outdir / "MaGeZ_objective.png")
