@@ -12,6 +12,9 @@ Options:
   -s <xy-size>, --xy-size=<xy-size>  force xy-size (do not use when using VOIs as init) [default: -1]
   -S <subsets>, --subsets=<subsets>  number of subsets [default: 2]
   -i <subiterations>, --subiterations=<subiterations>     number of sub-iterations [default: 14]
+
+Output:
+   OSEM_image.*v and kappa.*v in <data_path>
 """
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024 University College London
@@ -128,6 +131,9 @@ def main(argv=None):
     num_subsets = int(args['--subsets'])
     num_updates = int(args['--subiterations'])
     template_image_filename = args['--template_image']
+
+    os.chdir(data_path)
+
     # engine's messages go to files, except error messages, which go to stdout
     _ = STIR.MessageRedirector('info.txt', 'warnings.txt')
 
@@ -143,7 +149,7 @@ def main(argv=None):
         template_image = template_image.zoom_image(zooms=(1, 1, 1), offsets_in_mm=(0, 0, 0),
                                                    size=(-1, xy_size, xy_size))
 
-    run(outdir=data_path, acquired_data=acquired_data, additive_term=additive_term, mult_factors=mult_factors,
+    run(outdir="", acquired_data=acquired_data, additive_term=additive_term, mult_factors=mult_factors,
         template_image=template_image, num_updates=num_updates, num_subsets=num_subsets)
     log.info("done with %s", data_path)
 
