@@ -11,6 +11,7 @@ Options:
   --updates=<u>               number of updates to run [default: 500]
   --initial_image=<filename>  optional initial image, normally the OSEM_image from get_data.
 
+  --initial_FWHM=<f>          optional FWHM of 3D Gaussian filter, [default: 0]
   --interval=<i>              interval to save [default: 3]
   --outreldir=<relpath>       optional relative path to override
                               (defaults to 'LBFGSBPC' or 'LBFGSBPC_cont' if initial_image is set)
@@ -110,7 +111,7 @@ initial_image = args['--initial_image']
 interval = int(args['--interval'])
 outreldir = args['--outreldir']
 beta_factor = float(args['--penalisation_factor_multiplier'])
-
+FWHM = float(args['--initial_FWHM'])
 outdir = OUTDIR / scanID
 srcdir = SRCDIR / scanID
 # log.info("Finding files in %s", srcdir)
@@ -127,6 +128,11 @@ else:
     initial_image = STIR.ImageData(initial_image)
     outdir = outdir / ("LBFGSBPC_cont" if outreldir is None else outreldir)
 
+if FWHM > 0:
+    filter = STIR.SeparableGaussianImageFilter()
+    filter.set_fwhms((FWHM, FWHM, FWHM))
+    filter.apply(initial_image)
+
 org_beta = data.prior.get_penalisation_factor()
 new_beta = org_beta * beta_factor
 data.prior.set_penalisation_factor(new_beta)
@@ -134,6 +140,7 @@ data.prior.set_penalisation_factor(new_beta)
 print("Penalisation factor:", data.prior.get_penalisation_factor(), ' = ', org_beta, '*', beta_factor)
 print("num_updates:", num_updates)
 print("initial_image:", initial_image_name)
+print("FWHM of Gaussian filter:", FWHM)
 print("outdir:", outdir)
 print("interval:", interval)
 

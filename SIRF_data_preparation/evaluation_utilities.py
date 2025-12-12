@@ -18,10 +18,14 @@ def read_objectives(datadir='.'):
         return np.asarray([tuple(map(float, row)) for row in reader])
 
 
+def get_metrics_for_images(qm: QualityMetrics, iters: Iterable[STIR.ImageData]):
+    """Compute metrics and return as 2d array"""
+    return np.asarray([list(qm.evaluate(im).values()) for im in iters])
+
+
 def get_metrics(qm: QualityMetrics, iters: Iterable[int], srcdir='.'):
     """Read 'iter_{iter_glob}.hv' images from datadir, compute metrics and return as 2d array"""
-    return np.asarray([
-        list(qm.evaluate(STIR.ImageData(str(Path(srcdir) / f'iter_{i:04d}.hv'))).values()) for i in iters])
+    return get_metrics_for_images(qm, (STIR.ImageData(str(Path(srcdir) / f'iter_{i:04d}.hv')) for i in iters))
 
 
 def plot_metrics(iters: Iterable[int], m: np.ndarray, labels=None, suffix=""):
