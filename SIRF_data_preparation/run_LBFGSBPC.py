@@ -25,10 +25,10 @@ __version__ = '0.1.0'
 import csv
 
 import matplotlib.pyplot as plt
-import stir  # stir Python interface
+import stir  # stir Python interface # yapf: disable
 from docopt import docopt
 
-import sirf.STIR as STIR  # SIRF python interface to STIR
+import sirf.STIR as STIR  # SIRF python interface to STIR # yapf: disable
 from petric import OUTDIR, SRCDIR, get_data
 from sirf.contrib.LBFGSBPC.LBFGSBPC import LBFGSBPC
 from sirf.contrib.partitioner import partitioner
