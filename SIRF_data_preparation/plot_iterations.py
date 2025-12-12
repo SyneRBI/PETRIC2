@@ -147,7 +147,7 @@ try:
                                     max(10 // iteration_interval, 2))
     iter = iters[idx]
     print('pass index: ', iter)
-except BaseException:
+except Exception:
     print('Not yet passed, using last')
     iter = iters[-1]
 
