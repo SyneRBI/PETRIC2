@@ -4,10 +4,10 @@
 # cd 
 # cd PETRIC2
 # phantoms="Siemens_mMR_ACR GE_D690_NEMA_IQ Siemens_mMR_NEMA_IQ Siemens_Vision600_ZrNEMAIQ"
-phantoms="Siemens_Vision600_Hoffman"
+phantoms="Siemens_Vision600_ZrNEMAIQ"
 for phantom in $phantoms; do
 #  for beta in 1 10 100 1000; do
-for beta in '1.5' ; do
+for beta in '0.1,0.05,0.2' ; do
   # python run_LBFGSBPC.py $phantom --updates 400 --interval 100 --beta $beta > output/output_${phantom}_LBFGSBPC_beta_${beta}.log 2>&1
   echo -n "Running MaGeZ for phantom $phantom with beta $beta ..."
   python run_MaGeZ.py $phantom --updates 400 --interval 100 --beta $beta > output/output_${phantom}_MaGeZ_betas.log 2>&1

@@ -60,8 +60,8 @@ betas = _beta.split(',')
 # Override petric's default
 # OUTDIR = Path("../output")
 
-print(f"{SRCDIR}", SRCDIR.is_dir())
-print(f"{OUTDIR}", OUTDIR.is_dir())
+print(f"{SRCDIR}", SRCDIR.is_dir(), flush=True)
+print(f"{OUTDIR}", OUTDIR.is_dir(), flush=True)
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     PETRICDIR = Path('~/workdir/PETRIC2').expanduser()
@@ -70,17 +70,17 @@ if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
     OUTDIR = PETRICDIR / 'output'
     # Override petric's default
     # OUTDIR = Path("/output")
-    print(f"Adjusted SRCDIR to {SRCDIR}")
+    print(f"Adjusted SRCDIR to {SRCDIR}", flush=True)
 
 outdir = OUTDIR / scanID
 srcdir = SRCDIR / scanID
 # log.info("Finding files in %s", srcdir)
-print (f"outdir {outdir}")
-print (f"srcdir {srcdir}")
+print (f"outdir {outdir}", flush=True)
+print (f"srcdir {srcdir}", flush=True)
 
 settings = get_settings(scanID)
 
-print(settings)
+print(settings, flush=True)
 
 data = get_data(srcdir=srcdir, outdir=outdir)
 if initial_image is None:
@@ -105,7 +105,15 @@ class SaveNpyCallback(callbacks.Callback):
             array = algorithm.get_output().asarray(copy=False)
             npy_path = self.outdir / f"MaGeZ_iter{iter_num:04d}.npy"
             numpy.save(npy_path, array)
-            print(f"Saved numpy array to {npy_path}")
+
+class SaveInterfileCallback(SaveNpyCallback):
+
+    def __call__(self, algorithm):
+        if algorithm.iteration % self.interval == 0:
+            iter_num = algorithm.iteration
+            fname = self.outdir / f"MaGeZ_iter{iter_num:04d}.hv"
+            algorithm.get_output().write(str(fname))
+            # print(f"Saved numpy array to {npy_path}")
 # create output directory if not there
 os.makedirs(outdir, exist_ok=True)
 
@@ -124,6 +132,7 @@ for beta in betas:
     print("interval:", interval, flush=True)
     print("Penalisation factor:", data.prior.get_penalisation_factor(), flush=True)
     data.prior.set_penalisation_factor(float(beta) * petric1_beta)
+    print("Beta multiplier:", beta, flush=True)
     print("Rescaled penalisation factor:", data.prior.get_penalisation_factor(), flush=True)
 
 
@@ -131,7 +140,7 @@ for beta in betas:
     # %%
     
 
-    cb = SaveNpyCallback(b_outdir, interval)
+    cb = SaveInterfileCallback(b_outdir, interval)
     algo.run(iterations=num_updates+1, callbacks=[cb, 
                                                 callbacks.TextProgressCallback()])
     # %%
@@ -146,11 +155,11 @@ for beta in betas:
     # %%
     fig = plt.figure()
     data_QC.plot_image(algo.get_output(), **settings.slices)
-    fig.savefig(b_outdir / "MaGeZ_slices.png")
+    fig.savefig(b_outdir / f"MaGeZ_slices_{beta}.png")
     # plt.show()
     # %%
     print(algo.iterations)
     print(algo.loss)
     fig = plt.figure()
     plt.plot(algo.iterations, algo.loss)
-    fig.savefig(outdir / "MaGeZ_objective.png")
+    fig.savefig(b_outdir / f"MaGeZ_objective_{beta}.png")
