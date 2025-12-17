@@ -87,7 +87,11 @@ def construct_preconditioner(initial: STIR.ImageData, obj_fun: STIR.ObjectiveFun
     r"""Construct a preconditioner for LBFGSB-PC
 
     Tsai's paper uses (-H.1). However, for the RDP, this does not work very well. We have better
-    results when using (-H_loglikelihood.1 + diag(H_prior))
+    results when using (-H_loglikelihood.1 + diag(H_prior)).
+    In addition, H.1 is sensitive to noise once data gets very noisy, so we'll use
+    the "kappa" of the prior (see create_initial_images).
+    WARNING: this latter modification is NOT a general strategy and we didn't test if it
+    works better than H.1 or not.
     """
     stir_initial = sirf_to_stir(initial)
     # sirf_prior = obj_fun.get_prior() # returns object of type Prior, which isn't good enough
@@ -95,9 +99,10 @@ def construct_preconditioner(initial: STIR.ImageData, obj_fun: STIR.ObjectiveFun
     diag = stir_initial.clone()
     stir_prior.compute_Hessian_diagonal(diag, stir_initial)
     diag = stir_to_sirf(diag)
-    sirf_prior.set_penalisation_factor(0)
-    ll_precon = obj_fun.multiply_with_Hessian(initial, initial.get_uniform_copy(1)) * -1
-    sirf_prior.set_penalisation_factor(stir_prior.get_penalisation_factor())
+    # sirf_prior.set_penalisation_factor(0)
+    # ll_precon = obj_fun.multiply_with_Hessian(initial, initial.get_uniform_copy(1)) * -1
+    # sirf_prior.set_penalisation_factor(stir_prior.get_penalisation_factor())
+    ll_precon = sirf_prior.get_kappa().power(2)
     return ll_precon + diag
 
 

@@ -12,11 +12,14 @@ Options:
   -s <xy-size>, --xy-size=<xy-size>  force xy-size (do not use when using VOIs as init) [default: -1]
   -S <subsets>, --subsets=<subsets>  number of subsets [default: 2]
   -i <subiterations>, --subiterations=<subiterations>     number of sub-iterations [default: 14]
+
+Output:
+   OSEM_image.*v and kappa.*v in <data_path>
 """
 # Copyright 2024 Rutherford Appleton Laboratory STFC
 # Copyright 2024 University College London
 # Licence: Apache-2.0
-__version__ = '0.2.0'
+__version__ = '0.3.0'
 
 import logging
 import math
@@ -75,14 +78,31 @@ def OSEM(obj_fun, initial_image, num_updates=14, num_subsets=2):
     return recon.get_output()
 
 
-def compute_kappa_image(obj_fun, initial_image):
+def compute_kappa_image(acq_model: STIR.AcquisitionModel, initial_image: STIR.ImageData,
+                        FWHM: float = 8) -> STIR.AcquisitionModel:
     """
-    Computes a "kappa" image for a prior as sqrt(H.1). This will attempt to give uniform "perturbation response".
+    Computes a "kappa" image for a prior approximated as sqrt(-H.1).
+    This will attempt to give uniform "perturbation response".
     See Yu-jung Tsai et al. TMI 2020 https://doi.org/10.1109/TMI.2019.2913889
 
-    WARNING: Assumes the objective function has been set-up already
+    We use a modified version here, as for very noisy data, H.1 becomes quite noisy itself,
+    with large impact on the kappa, and therefore a prior that depends on the noise in the data.
+    The approximation we use is
+    `kappa^2 = A^T . ((1 / (A.x + c)) * A.1 )`
+    i.e. the "central part" of the Hessian `y/(A.x+c)^2` is replaced. Moreover, we first filter
+    the initial image with a 3D Gaussian with the given FWHM.
+
+    WARNING: Assumes acq_model has been set-up already
     """
-    minus_Hessian_row_sum = -1 * obj_fun.multiply_with_Hessian(initial_image, initial_image.allocate(1))
+    if FWHM > 0:
+        filter = STIR.SeparableGaussianImageFilter()
+        filter.set_fwhms((FWHM, FWHM, FWHM))
+        filter.apply(initial_image)
+
+    # minus_Hessian_row_sum = -1 * obj_fun.multiply_with_Hessian(initial_image, initial_image.allocate(1))
+    A_1 = acq_model.get_linear_acquisition_model().forward(initial_image.allocate(1))
+    fwd_image = acq_model.forward(initial_image)
+    minus_Hessian_row_sum = acq_model.backward(A_1 / (fwd_image+.0001))
     return minus_Hessian_row_sum.maximum(0).power(.5)
 
 
@@ -97,7 +117,7 @@ def run(outdir, acquired_data, additive_term, mult_factors, template_image, num_
     OSEM_image.write(os.path.join(outdir, 'OSEM_image.hv'))
 
     if write_kappa:
-        kappa = compute_kappa_image(obj_fun, OSEM_image)
+        kappa = compute_kappa_image(acq_model, OSEM_image)
         kappa.write(os.path.join(outdir, 'kappa.hv'))
 
 
@@ -111,6 +131,9 @@ def main(argv=None):
     num_subsets = int(args['--subsets'])
     num_updates = int(args['--subiterations'])
     template_image_filename = args['--template_image']
+
+    os.chdir(data_path)
+
     # engine's messages go to files, except error messages, which go to stdout
     _ = STIR.MessageRedirector('info.txt', 'warnings.txt')
 
@@ -126,7 +149,7 @@ def main(argv=None):
         template_image = template_image.zoom_image(zooms=(1, 1, 1), offsets_in_mm=(0, 0, 0),
                                                    size=(-1, xy_size, xy_size))
 
-    run(outdir=data_path, acquired_data=acquired_data, additive_term=additive_term, mult_factors=mult_factors,
+    run(outdir="", acquired_data=acquired_data, additive_term=additive_term, mult_factors=mult_factors,
         template_image=template_image, num_updates=num_updates, num_subsets=num_subsets)
     log.info("done with %s", data_path)
 
