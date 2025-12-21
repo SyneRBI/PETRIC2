@@ -42,6 +42,7 @@ OUTDIR = Path(os.getenv("PETRIC_OUTDIR", f"/logs/{TEAM}/{VERSION}" if TEAM and V
 SRCDIR = Path(os.getenv("PETRIC_SRCDIR", "/mnt/share/petric"))
 if not SRCDIR.is_dir():
     SRCDIR = _petric_path / 'data'
+STIR.set_max_omp_threads(8) # limits Vision600 RAM use
 
 
 class Callback(cil_callbacks.Callback):
