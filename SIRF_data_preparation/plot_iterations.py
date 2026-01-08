@@ -100,11 +100,6 @@ OSEMmean = VOI_mean(OSEM_image, data.background_mask)
 print('OSEMmean/norm (background VOI):', OSEMmean / norm)
 
 # %%
-image2 = STIR.ImageData(str(datadir1 / f"iter_{0:04d}.hv"))
-diff = image2 - reference_image
-print("relative l1-norm diff final-first:", diff.abs().max() / reference_image.max())
-data_QC.plot_image(diff, **slices, vmin=-cmax / 100, vmax=cmax / 100)
-# %%
 objs = read_objectives(datadir)
 if datadir1.is_dir():
     objs0 = objs.copy()
@@ -130,9 +125,9 @@ last_iteration = int(objs[-1, 0] + .5)
 iteration_interval = int(objs[-2, 0] - objs[-3, 0] + .5)
 if datadir1.is_dir():
     last_iteration = int(objs0[-1, 0] + .5)
-    iteration_interval = int(objs0[-1, 0] - objs0[-2, 0] + .5) * 2
+    iteration_interval = int(objs0[-1, 0] - objs0[-2, 0] + .5)
 # %%
-iters = range(0, last_iteration, iteration_interval)
+iters = range(0, last_iteration + 1, iteration_interval)
 print('GETMETRICS')
 m = get_metrics(qm, iters, srcdir=datadir)
 print('DONE')
@@ -158,8 +153,8 @@ fig.savefig(outdir / f'{scanID}_metrics_{algoname}.png')
 m1 = None
 if datadir1.is_dir():
     last_iteration1 = int(objs1[-1, 0] + .5)
-    iteration_interval1 = int(objs1[-1, 0] - objs1[-2, 0] + .5) * 2
-    iters1 = range(0, last_iteration1, iteration_interval1)
+    iteration_interval1 = int(objs1[-1, 0] - objs1[-2, 0] + .5)
+    iters1 = range(0, last_iteration1 + 1, iteration_interval1)
     m1 = get_metrics(qm, iters1, srcdir=datadir1)
 # %%
 if m1 is not None:
@@ -192,7 +187,7 @@ except Exception:
 image = STIR.ImageData(str(pass_datadir / f"iter_{iter:04d}.hv"))
 plt.figure()
 data_QC.plot_image(image, **slices, vmax=cmax)
-plt.suptitle(f'{pass_datadir.stem}/iter_{iter:04d}')
+plt.suptitle(f'{pass_datadir.parts[-1]}/iter_{iter:04d}')
 plt.savefig(outdir / f'{scanID}_{algoname}_{iter}.png')
 plt.figure()
 data_QC.plot_image(reference_image, **slices, vmax=cmax)
@@ -202,6 +197,8 @@ plt.suptitle('reference (or last)')
 # data_QC.plot_image(image - data.OSEM_image, **slices, vmin=-cmax / 50, vmax=cmax / 50)
 # plt.savefig(outdir / f'{scanID}_OSEM_diff_image_{algoname}_{iter}.png')
 plt.figure()
-data_QC.plot_image(image - reference_image, **slices, vmin=-cmax / 100, vmax=cmax / 100)
+data_QC.plot_image(image - reference_image, **slices, vmin=-cmax / 100, vmax=cmax / 100, cmap='bwr')
 plt.suptitle('diff')
 plt.savefig(outdir / f'{scanID}_ref_diff_image_{algoname}_{iter}.png')
+
+# %%
