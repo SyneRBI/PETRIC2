@@ -76,6 +76,7 @@ def construct_stir_RDP(sirf_prior: STIR.RelativeDifferencePrior, initial_image: 
     # need to make it differentiable
     prior.set_epsilon(sirf_prior.get_epsilon())
     prior.set_penalisation_factor(sirf_prior.get_penalisation_factor())
+    prior.set_gamma(sirf_prior.get_gamma())
     if sirf_prior.get_kappa() is not None:
         prior.set_kappa_sptr(sirf_to_stir(sirf_prior.get_kappa()))
     prior.set_up(sirf_to_stir(initial_image))
