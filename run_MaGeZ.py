@@ -64,9 +64,8 @@ print(f"{SRCDIR}", SRCDIR.is_dir(), flush=True)
 print(f"{OUTDIR}", OUTDIR.is_dir(), flush=True)
 
 if not all((SRCDIR.is_dir(), OUTDIR.is_dir())):
-    PETRICDIR = Path('~/workdir/PETRIC2').expanduser()
-    SRCDIR = PETRICDIR / 'data'
     SRCDIR = Path("/data/wip/petric2")
+    PETRICDIR = Path('~/workdir/PETRIC2').expanduser()
     OUTDIR = PETRICDIR / 'output'
     # Override petric's default
     # OUTDIR = Path("/output")

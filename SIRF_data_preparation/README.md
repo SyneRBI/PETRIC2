@@ -117,12 +117,10 @@ python run_LBFGSBPC.py GE_D690_NEMA_IQ --updates 400 --interval 100 --beta 0.1
 ```
 ### Edo's config
 
-Build and run the petric2 container. SB branch `bump-ccpi-modules`
+Build on top of the [petric2](https://github.com/SyneRBI/SIRF-SuperBuild/pkgs/container/sirf/616875753?tag=petric2) image:
 
 ```
-nohup ./docker/compose.sh -bg > local_build.log &
-docker tag synerbi/jupyter:sirf-build-gpu synerbi/sirf:petric2-rc1
-ghcr.io/synerbi/sirf:petric2-rc1
+docker build . --build-arg GROUP_ID=$(id -g) -t petric2-magez
 docker compose -f docker-compose.yml up -d
 nohup docker exec petric-container bash ./PETRIC2/run-for-beta.sh &
 ```
@@ -132,5 +130,9 @@ requires
 
 ```
 conda install --channel conda-forge array-api-compat cupy 
+```
+To install the appropriate requirements please use the `Dockerfile` as 
 
+```
+docker build . --build-arg GROUP_ID=$(id -g) -t petric2-magez
 ```
