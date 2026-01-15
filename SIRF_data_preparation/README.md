@@ -30,51 +30,60 @@ for the Siemens mMR NEMA IQ data (on Zenodo):
 
 # Steps to follow to prepare data
 If starting from Siemens mMR list-mode data and letting SIRF take care of scatter etc, check for instance [steps for Siemens mMR ACR](Siemens_mMR_ACR/README.md). If pre-prepared data are given, check that naming of all files is correct. KT normally puts all data
-in `~/devel/PETRIC2/data/<datasetname>` with `datasetname` following convention of `scanner_phantom-name` as others (instructions below and indeed some scripts might assume this location). Change working directory to where data sits and add PETRIC2 to your python-path, e.g.
+in `~/devel/PETRIC2/data/<datasetname>` with `datasetname` following convention of `scanner_phantom-name` as others (instructions below and indeed some scripts might assume this location). Change working directory to where data sits and add PETRIC2 to your python-path, and go to correct directory, e.g.
 ```
 PYTHONPATH=~/devel/PETRIC2:$PYTHONPATH`
+cd ~/devel/PETRIC2
 ```
 Install extra software if you don't have it yet:
 ```
 conda install scikit-image
 pip install git+https://github.com/TomographicImaging/Hackathon-000-Stochastic-QualityMetrics
 ```
+*Warning*: some of the scripts use `stir_math`, which is a STIR utility, for copying of images and thresholding.
+If you don't have that in your image, you could either install it (in principle, `conda -c conda_forge install stir` should work),
+or create a Python equivalent.
 
-1. Run initial [data_QC.py](data_QC.py)
+1. For existing PETRIC data, `run_bootstrap_OSEM.sh` to reduce count level
+2. Run initial [data_QC.py](data_QC.py)
    ```
-   python -m SIRF_data_preparation.data_QC
+   python -m SIRF_data_preparation.data_QC --dataset <datasetname>
    ```
-
-2. Run [create_initial_images.py](create_initial_images.py).
+3. Run [create_initial_images.py](create_initial_images.py).
    ```
-   python -m SIRF_data_preparation.create_initial_images --template_image=<some_image>
+   python -m SIRF_data_preparation.create_initial_images data/<datasetname>
    ```
-   where the template image is one of the given VOIs (it does not matter which one, as they should all have the same geometry). (If you need to create VOIs yourself, you can use `None` or the vendor image).
-3. Edit `OSEM_image.hv` to add modality, radionuclide and duration info which got lost (copy from `prompts.hs`)
-4. Edit [dataset_settings.py](dataset_settings.py) for subsets (used by our reference reconstructions only, not by participants).
-5. Edit [petric.py](../petric.py) for slices to use for creating figures (`DATA_SLICES`). Note that `data_QC` outputs centre-of-mass of the VOIs, which can be helpful for this.
-6. Optionally make VOIs, e.g.
+   Optionally add argument `--template_image=<some_image>`, this defaults to `PETRIC/VOI_whole_object.hv`.
+   (If you need to create VOIs yourself, you can use `None` or the vendor image).
+4. Edit `OSEM_image.hv` to add modality, radionuclide and duration info which got lost (copy from `prompts.hs`)
+5. Edit [dataset_settings.py](dataset_settings.py) for subsets (used by our BSREM reference reconstructions only, *not* by participants), `PETRIC1_clims` for hand-tuned colour-scale max, and `preferred_scaling` for the scale factor used in the bootstrapping.
+6. If not PETRIC1 data, edit [petric.py](../petric.py) for slices to use for creating figures (`DATA_SLICES`). Note that `data_QC` outputs centre-of-mass of the VOIs, which can be helpful for this.
+7. If not available yet, make VOIs, e.g.
    ```
    python -m SIRF_data_preparation.create_Hoffman_VOIs --dataset=<datasetname>
    ```
-7. Run [data_QC.py](data_QC.py) which should now make more plots. Check VOI alignment etc.
+8. Run [data_QC.py](data_QC.py) which should now make more plots. Check VOI alignment etc.
    ```
    python -m SIRF_data_preparation.data_QC --dataset=<datasetname>
    ```
-8. `cd ../..`
-9. Get penalisation factor by comparing to a dataset from the ***same*** scanner, e.g.
+9. Get penalisation factor by comparing to a dataset from the ***same*** scanner as a starting point, e.g.
    ```
    python -m SIRF_data_preparation.get_penalisation_factor --dataset=NeuroLF_Esser_Dataset --ref_dataset=NeuroLF_Hoffman_Dataset -w
    ```
 10. `python -m SIRF_data_preparation.run_OSEM <datasetname>`
-11. Run BSREM to generate reference solution. You probably want to monitor how these images look like as the recon will take a long time
+11. Run LBFGSBPC (with restart) to generate reference solution. You probably want to monitor how these images look like (see next bullet). For instance, if you want to be able to run different penalty factors:
+    ```sh
+    sf=<penalty_scale_factor_wrt_PETRIC1>
+    dataset=<datasetname>
+    python -m SIRF_data_preparation.run_LBFGSBPC --penalisation_factor_multiplier=$sf --outreldir=LBFGSBPC${sf}  --initial_FWHM=5  --interval=20 --updates=100 ${dataset}
+    python -m SIRF_data_preparation.run_LBFGSBPC --penalisation_factor_multiplier=$sf --outreldir=LBFGSBPC${sf}_cont1  --initial_image=output/${dataset}/LBFGSBPC${sf}/iter_final.hv   --interval=1 --updates=200 ${dataset}
     ```
-    python -m SIRF_data_preparation.run_BSREM  <datasetname>`
+12. Run [plot_iterations.py](plot_iterations.py) to check results. (If running interactively, set `manual_settings=True` and adjust the `<datasetname>`).
+13. Copy the  ` iter_final` to `data/<datasetname>/PETRIC/reference_image`, e.g.
     ```
-12. Adapt [plot_iterations.py](plot_iterations.py) (probably only the `<datasetname>`) and run interactively.
-13. Copy the BSREM ` iter_final` to `data/<datasetname>/PETRIC/reference_image`, e.g.
-    ```
-    stir_math data/<datasetname>/PETRIC/reference_image.hv output/<datasetname>/iter_final.hv
+    stir_math data/<datasetname>/PETRIC/reference_image.hv output/<datasetname>/LBFGSBPC${sf}_cont1/iter_final.hv
     ```
 14. `cd data/<datasetname>; rm -rf *ahv PETRIC/*ahv output info.txt warnings.txt`, check its `README.md` etc
 15. Transfer to web-server
+
+For most training data sets, there should be `run_LBFGSBPC.sh` in `SIRF_data_preparation/<datasetname>` with (most of) these steps.
