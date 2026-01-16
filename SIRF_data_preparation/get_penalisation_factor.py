@@ -73,8 +73,8 @@ def get_penalisation_factor(ref_data: Dataset, cur_data: Dataset) -> float:
 refdir = Path(the_data_path(ref_dataset))
 curdir = Path(the_data_path(dataset))
 # %%
-ref_data = get_data(refdir, outdir=None)
-cur_data = get_data(curdir, outdir=None)
+ref_data = get_data(refdir, outdir=None, read_sinos=False)
+cur_data = get_data(curdir, outdir=None, read_sinos=False)
 # %%
 penalisation_factor = get_penalisation_factor(ref_data, cur_data)
 
