@@ -338,8 +338,8 @@ if SRCDIR.is_dir() and not os.getenv("PETRIC_SKIP_DATA", False):
          [MetricsWithTimeout(outdir=OUTDIR / "D690_NEMA", **DATA_SLICES['GE_D690_NEMA_IQ'])]),
         # (SRCDIR / "Mediso_NEMA_IQ_lowcounts", OUTDIR / "Mediso_NEMA_lowcounts",
         #  [MetricsWithTimeout(outdir=OUTDIR / "Mediso_NEMA_lowcounts", **DATA_SLICES['Mediso_NEMA_IQ_lowcounts'])]),
-        # (SRCDIR / "GE_DMI4_NEMA_IQ", OUTDIR / "DMI4_NEMA",
-        #  [MetricsWithTimeout(outdir=OUTDIR / "DMI4_NEMA", **DATA_SLICES['GE_DMI4_NEMA_IQ'])])
+        (SRCDIR / "GE_DMI4_NEMA_IQ", OUTDIR / "DMI4_NEMA",
+         [MetricsWithTimeout(outdir=OUTDIR / "DMI4_NEMA", **DATA_SLICES['GE_DMI4_NEMA_IQ'])]),
     ]
     # yapf: enable
 else:
