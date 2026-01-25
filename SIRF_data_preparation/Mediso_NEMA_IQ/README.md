@@ -1,5 +1,9 @@
 # Data from the Mediso AnyScan at NPL
-Initial processing steps
+
+*** Steps below are for PETRIC1 *** and therefore some scripts are outdated.
+Check `run_LBFGSBPC.py` for PETRIC2
+
+## PETRIC1 Initial processing steps
 ```sh
 orgpath=/mnt/share/petric/wip/NEMA_Challenge
 #orgpath=~/devel/PETRIC/orgdata/
