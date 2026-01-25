@@ -8,7 +8,8 @@ Participants should never have to use these (unless you want to create your own 
 - `data_QC.py`: generates plots for QC
 - `plot_iterations.py`: plot objective functions/metrics after a run (needs editing before running)
 - `run_BSREM.py`, `run_LBFGSBPC.py` and `run_OSEM.py`: scripts to run these algorithms for a dataset
-- `run_bootstrap.sh`: script to generate a new data-set using (sinogram) bootstrapping
+- `run_bootstrap_OSEM.sh`: script to generate a new data-set using (sinogram) bootstrapping
+- `compute_objective_value.py`: compute objective values for multiple images for one dataset
 
 ## Helpers
 
