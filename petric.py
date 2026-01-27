@@ -372,9 +372,9 @@ else:
                 QualityMetrics(data.reference_image, data.whole_object_mask, data.background_mask,
                                tb_summary_writer=metrics_with_timeout.tb, voi_mask_dict=data.voi_masks))
         metrics_with_timeout.reset() # timeout from now
-        algo = Submission(data)
+        algo = Submission(data, update_objective_interval=np.iinfo(np.int32).max)
         try:
-            algo.run(np.inf, callbacks=metrics + submission_callbacks, update_objective_interval=np.inf)
+            algo.run(np.inf, callbacks=metrics + submission_callbacks)
         except Exception:
             print_exc(limit=2)
         finally:
