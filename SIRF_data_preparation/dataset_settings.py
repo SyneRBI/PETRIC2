@@ -20,7 +20,7 @@ preferred_scaling = {
     'GE_DMI3_Torso': 1e-1,
     'GE_DMI4_NEMA_IQ': 1e-1,
     'Mediso_NEMA_IQ': 1e-2,
-    'NeuroLF_Esser_Dataset': 1e-1,
+    'NeuroLF_Esser_Dataset': 1e-2,
     'NeuroLF_Hoffman_Dataset': 1e-2,
     'Siemens_mMR_ACR': 1e-1,
     'Siemens_mMR_NEMA_IQ': 1e-1,
