@@ -10,6 +10,8 @@ Participants should never have to use these (unless you want to create your own 
 - `run_BSREM.py`, `run_LBFGSBPC.py` and `run_OSEM.py`: scripts to run these algorithms for a dataset
 - `run_bootstrap_OSEM.sh`: script to generate a new data-set using (sinogram) bootstrapping
 - `compute_objective_value.py`: compute objective values for multiple images for one dataset
+- `run_beta_search.py`: script to find a suitable penalisation factor for a new data-set
+  - uses `MaGeZ` (the winner of the first PETRIC) [with some zerocopy tweaks](https://github.com/SyneRBI/SIRF-Contribs/pull/28)
 
 ## Helpers
 
