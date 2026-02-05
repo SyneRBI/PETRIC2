@@ -28,6 +28,7 @@ import csv
 import matplotlib.pyplot as plt
 import stir  # stir Python interface # yapf: disable
 from docopt import docopt
+from tqdm.auto import tqdm
 
 import sirf.STIR as STIR  # SIRF python interface to STIR # yapf: disable
 from petric import OUTDIR, SRCDIR, get_data
@@ -166,7 +167,8 @@ algo = LBFGSBPC(obj_fun, initial=initial_image, update_objective_interval=interv
                 save_intermediate_results_path=str(outdir))
 algo.set_preconditioner(precond)
 # %%
-algo.run(iterations=num_updates)
+with tqdm(desc="LBFGSBPC", total=num_updates) as t:
+    algo.run(iterations=num_updates, callbacks=[lambda alg: t.update(alg.iter - t.n)])
 # %%
 algo.get_output().write(str(outdir / "iter_final.hv"))
 # %%
