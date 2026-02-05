@@ -7,7 +7,6 @@ Usage:
 
 Options:
   -h, --help
-  -h, --help
   --dataset=<name>    dataset name
   --algo_name=<a>     name of algorithm/subfolder with iter*.hv
   --continuation_suffix=<c>
