@@ -142,6 +142,7 @@ if FWHM > 0:
 org_beta = data.prior.get_penalisation_factor()
 new_beta = org_beta * beta_factor
 data.prior.set_penalisation_factor(new_beta)
+outdir.mkdir(parents=True, exist_ok=True)
 (outdir / "penalisation_factor.txt").write_text(str(new_beta))
 
 print("Penalisation factor:", data.prior.get_penalisation_factor(), ' = ', org_beta, '*', beta_factor)
