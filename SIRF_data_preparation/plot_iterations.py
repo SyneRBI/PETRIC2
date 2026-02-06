@@ -7,7 +7,6 @@ Usage:
 
 Options:
   -h, --help
-  -h, --help
   --dataset=<name>    dataset name
   --algo_name=<a>     name of algorithm/subfolder with iter*.hv
   --continuation_suffix=<c>
@@ -16,16 +15,16 @@ Options:
 # Copyright 2024-2025 University College London
 # Licence: Apache-2.0
 # %%
-__version__ = '0.6.0'
-
-# %%
 # %load_ext autoreload
 # %autoreload 2
-# %%
+__version__ = '0.6.0'
+
 from pathlib import Path
 
+# %%
 # force location
-# os.environ['PETRIC_SRCDIR'] = '/home/KrisThielemans/devel/PETRIC2/data'
+# import os
+# os.environ.update(PETRIC_SRCDIR="data", PETRIC_OUTDIR="output")
 # %%
 import matplotlib.pyplot as plt
 import numpy
@@ -42,7 +41,7 @@ from SIRF_data_preparation.evaluation_utilities import get_metrics, plot_metrics
 STIR.AcquisitionData.set_storage_scheme('memory')
 STIR.set_verbosity(0)
 # %% set this to True when running from vscode or similar and adapt settings below
-manual_settings = False
+manual_settings = True
 # %%
 if not manual_settings and __name__ == '__main__':
     args = docopt(__doc__, version=__version__)
@@ -52,16 +51,16 @@ if not manual_settings and __name__ == '__main__':
 else:
     # scanID = 'Siemens_Vision600_thorax'
     # scanID = 'NeuroLF_Hoffman_Dataset'
-    scanID = 'Siemens_mMR_NEMA_IQ'
+    # scanID = 'Siemens_mMR_NEMA_IQ'
     # scanID = 'Mediso_NEMA_IQ'
     # scanID = 'Siemens_Vision600_Hoffman'
-    # scanID = 'NeuroLF_Esser_Dataset'
-    scanID = 'Siemens_Vision600_ZrNEMAIQ'
-    algoname = 'LBFGSBPC5_contMaGeZ_cont'
+    scanID = 'NeuroLF_Esser_Dataset'
+    # scanID = 'Siemens_Vision600_ZrNEMAIQ'
+    # algoname = 'LBFGSBPC5_contMaGeZ_cont'
     # scanID = 'GE_D690_NEMA_IQ'
-    scanID = 'GE_DMI3_Torso'
-    algoname = 'LBFGSBPC1_cont4'
-    cont_suffix = '_cont'
+    # scanID = 'GE_DMI3_Torso'
+    algoname = 'LBFGSBPC0.15'
+    cont_suffix = '_cont1'
 
 # %%
 srcdir = SRCDIR / scanID
