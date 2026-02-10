@@ -197,7 +197,8 @@ class MetricsWithTimeout(Callback):
         self.tb = tb_cbk.tb # convenient access to the underlying SummaryWriter
         self.reset()
 
-    def reset(self):
+    def reset(self, **tqdm_kwargs):
+        self.callbacks[0].tqdm_kwargs.update(tqdm_kwargs)
         self.offset = 0
         self.limit = (now := time()) + self._seconds
         self.tb.add_scalar("reset", 0, -1, now) # for relative timing calculation
@@ -371,7 +372,7 @@ else:
             metrics_with_timeout.callbacks.append(
                 QualityMetrics(data.reference_image, data.whole_object_mask, data.background_mask,
                                tb_summary_writer=metrics_with_timeout.tb, voi_mask_dict=data.voi_masks))
-        metrics_with_timeout.reset() # timeout from now
+        metrics_with_timeout.reset(position=0) # timeout from now
         algo = Submission(data, update_objective_interval=np.iinfo(np.int32).max)
         try:
             algo.run(np.inf, callbacks=metrics + submission_callbacks)
