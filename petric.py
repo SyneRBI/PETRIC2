@@ -18,6 +18,7 @@ import csv
 import logging
 import os
 import re
+import resource
 from dataclasses import dataclass
 from pathlib import Path, PurePath
 from time import time
@@ -214,7 +215,9 @@ class MetricsWithTimeout(Callback):
         if isinstance(self.callbacks[-1], QualityMetrics) and isinstance(self.callbacks[0],
                                                                          cil_callbacks.ProgressCallback):
             self.callbacks[0].pbar.set_postfix(
-                RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'], refresh=False)
+                RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'],
+                RAM=tqdm.format_sizeof(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024, '',
+                                       1024), refresh=False)
         self.offset += time() - now
 
     @staticmethod
