@@ -18,6 +18,7 @@ import csv
 import logging
 import os
 import re
+import resource
 from dataclasses import dataclass
 from pathlib import Path, PurePath
 from time import time
@@ -197,7 +198,8 @@ class MetricsWithTimeout(Callback):
         self.tb = tb_cbk.tb # convenient access to the underlying SummaryWriter
         self.reset()
 
-    def reset(self):
+    def reset(self, **tqdm_kwargs):
+        self.callbacks[0].tqdm_kwargs.update(tqdm_kwargs)
         self.offset = 0
         self.limit = (now := time()) + self._seconds
         self.tb.add_scalar("reset", 0, -1, now) # for relative timing calculation
@@ -213,7 +215,9 @@ class MetricsWithTimeout(Callback):
         if isinstance(self.callbacks[-1], QualityMetrics) and isinstance(self.callbacks[0],
                                                                          cil_callbacks.ProgressCallback):
             self.callbacks[0].pbar.set_postfix(
-                RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'], refresh=False)
+                RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'],
+                RAM=tqdm.format_sizeof(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024, '',
+                                       1024), refresh=False)
         self.offset += time() - now
 
     @staticmethod
@@ -371,7 +375,7 @@ else:
             metrics_with_timeout.callbacks.append(
                 QualityMetrics(data.reference_image, data.whole_object_mask, data.background_mask,
                                tb_summary_writer=metrics_with_timeout.tb, voi_mask_dict=data.voi_masks))
-        metrics_with_timeout.reset() # timeout from now
+        metrics_with_timeout.reset(position=0) # timeout from now
         algo = Submission(data, update_objective_interval=np.iinfo(np.int32).max)
         try:
             algo.run(np.inf, callbacks=metrics + submission_callbacks)
