@@ -20,11 +20,11 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path, PurePath
-from resource import RUSAGE_SELF, getrusage
 from time import time
 from typing import Iterable
 
 import numpy as np
+import psutil
 from scipy.ndimage import binary_erosion
 from skimage.metrics import mean_squared_error as mse
 from tensorboardX import SummaryWriter
@@ -216,7 +216,7 @@ class MetricsWithTimeout(Callback):
                                                                          cil_callbacks.ProgressCallback):
             self.callbacks[0].pbar.set_postfix(
                 RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'],
-                RAM=tqdm.format_sizeof(getrusage(RUSAGE_SELF).ru_maxrss * 1024, '', 1024), refresh=False)
+                RAM=tqdm.format_sizeof(psutil.virtual_memory().used, '', 1024), refresh=False)
         self.offset += time() - now
 
     @staticmethod
