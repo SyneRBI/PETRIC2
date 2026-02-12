@@ -18,9 +18,9 @@ import csv
 import logging
 import os
 import re
-import resource
 from dataclasses import dataclass
 from pathlib import Path, PurePath
+from resource import RUSAGE_SELF, getrusage
 from time import time
 from typing import Iterable
 
@@ -216,8 +216,7 @@ class MetricsWithTimeout(Callback):
                                                                          cil_callbacks.ProgressCallback):
             self.callbacks[0].pbar.set_postfix(
                 RMSE_whole_object=self.callbacks[-1]._evaluate_cache['RMSE_whole_object'],
-                RAM=tqdm.format_sizeof(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024, '',
-                                       1024), refresh=False)
+                RAM=tqdm.format_sizeof(getrusage(RUSAGE_SELF).ru_maxrss * 1024, '', 1024), refresh=False)
         self.offset += time() - now
 
     @staticmethod
@@ -301,62 +300,48 @@ def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
                    whole_object_mask, background_mask, voi_masks, FOV_mask, srcdir.resolve())
 
 
+# yapf: disable
+shortnames = {
+    "GE_D690_NEMA_IQ": "D690_NEMA",
+    "GE_DMI3_Torso": "DMI3_Torso",
+    "GE_DMI4_NEMA_IQ": "DMI4_NEMA",
+    "Mediso_NEMA_IQ": "Mediso_NEMA",
+    "NeuroLF_Esser_Dataset": "NeuroLF_Esser",
+    "NeuroLF_Hoffman_Dataset": "NeuroLF_Hoffman",
+    "Siemens_mMR_ACR": "mMR_ACR",
+    "Siemens_mMR_NEMA_IQ": "mMR_NEMA",
+    "Siemens_Vision600_Hoffman": "Vision600_Hoffman",
+    "Siemens_Vision600_thorax": "Vision600_thorax",
+    "Siemens_Vision600_ZrNEMAIQ": "Vision600_ZrNEMA"}
 DATA_SLICES = {
-    'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
-    'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
-    'Siemens_mMR_ACR': {'transverse_slice': 99}, 'NeuroLF_Hoffman_Dataset': {'transverse_slice': 72},
-    'Mediso_NEMA_IQ': {'transverse_slice': 22, 'coronal_slice': 89,
-                       'sagittal_slice': 66}, 'Siemens_Vision600_thorax': {}, 'GE_DMI3_Torso': {'transverse_slice': 10},
-    'Siemens_Vision600_Hoffman': {}, 'NeuroLF_Esser_Dataset': {'transverse_slice': 20},
-    'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}, 'GE_D690_NEMA_IQ': {'transverse_slice': 23},
+    'GE_D690_NEMA_IQ': {'transverse_slice': 23},
+    'GE_DMI3_Torso': {'transverse_slice': 10},
+    'GE_DMI4_NEMA_IQ': {'transverse_slice': 27, 'coronal_slice': 109, 'sagittal_slice': 78},
     'Mediso_NEMA_IQ_lowcounts': {'transverse_slice': 22, 'coronal_slice': 74, 'sagittal_slice': 70},
-    'GE_DMI4_NEMA_IQ': {'transverse_slice': 27, 'coronal_slice': 109, 'sagittal_slice': 78}}
+    'Mediso_NEMA_IQ': {'transverse_slice': 22, 'coronal_slice': 89, 'sagittal_slice': 66},
+    'NeuroLF_Esser_Dataset': {'transverse_slice': 20},
+    'NeuroLF_Hoffman_Dataset': {'transverse_slice': 72},
+    'Siemens_mMR_ACR': {'transverse_slice': 99},
+    'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
+    'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
+    'Siemens_Vision600_Hoffman': {},
+    'Siemens_Vision600_thorax': {},
+    'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}}
+# yapf: enable
 
-if SRCDIR.is_dir() and not os.getenv("PETRIC_SKIP_DATA", False):
-    # create list of existing data
-    # NB: `MetricsWithTimeout` initialises `SaveIters` which creates `outdir`
-    # TODO: add more datasets
-    # yapf: disable
-    data_dirs_metrics = [
-        (SRCDIR / "Siemens_mMR_NEMA_IQ", OUTDIR / "mMR_NEMA",
-         [MetricsWithTimeout(outdir=OUTDIR / "mMR_NEMA", **DATA_SLICES['Siemens_mMR_NEMA_IQ'])]),
-        (SRCDIR / "NeuroLF_Hoffman_Dataset", OUTDIR / "NeuroLF_Hoffman",
-         [MetricsWithTimeout(outdir=OUTDIR / "NeuroLF_Hoffman", **DATA_SLICES['NeuroLF_Hoffman_Dataset'])]),
-        (SRCDIR / "Siemens_Vision600_thorax", OUTDIR / "Vision600_thorax",
-         [MetricsWithTimeout(outdir=OUTDIR / "Vision600_thorax", **DATA_SLICES['Siemens_Vision600_thorax'])]),
-        (SRCDIR / "Siemens_mMR_ACR", OUTDIR / "mMR_ACR",
-         [MetricsWithTimeout(outdir=OUTDIR / "mMR_ACR", **DATA_SLICES['Siemens_mMR_ACR'])]),
-        (SRCDIR / "Mediso_NEMA_IQ", OUTDIR / "Mediso_NEMA",
-         [MetricsWithTimeout(outdir=OUTDIR / "Mediso_NEMA", **DATA_SLICES['Mediso_NEMA_IQ'])]),
-        (SRCDIR / "GE_DMI3_Torso", OUTDIR / "DMI3_Torso",
-         [MetricsWithTimeout(outdir=OUTDIR / "DMI3_Torso", **DATA_SLICES['GE_DMI3_Torso'])]),
-        (SRCDIR / "Siemens_Vision600_Hoffman", OUTDIR / "Vision600_Hoffman",
-         [MetricsWithTimeout(outdir=OUTDIR / "Vision600_Hoffman", **DATA_SLICES['Siemens_Vision600_Hoffman'])]),
-        (SRCDIR / "NeuroLF_Esser_Dataset", OUTDIR / "NeuroLF_Esser",
-         [MetricsWithTimeout(outdir=OUTDIR / "NeuroLF_Esser", **DATA_SLICES['NeuroLF_Esser_Dataset'])]),
-        (SRCDIR / "Siemens_Vision600_ZrNEMAIQ", OUTDIR / "Vision600_ZrNEMA",
-         [MetricsWithTimeout(outdir=OUTDIR / "Vision600_ZrNEMA", **DATA_SLICES['Siemens_Vision600_ZrNEMAIQ'])]),
-        (SRCDIR / "GE_D690_NEMA_IQ", OUTDIR / "D690_NEMA",
-         [MetricsWithTimeout(outdir=OUTDIR / "D690_NEMA", **DATA_SLICES['GE_D690_NEMA_IQ'])]),
-        (SRCDIR / "GE_DMI4_NEMA_IQ", OUTDIR / "DMI4_NEMA",
-         [MetricsWithTimeout(outdir=OUTDIR / "DMI4_NEMA", **DATA_SLICES['GE_DMI4_NEMA_IQ'])]),
-    ]
-    # yapf: enable
-else:
-    data_dirs_metrics = [(None, None, [])] # type: ignore
-
-if not SRCDIR.is_dir():
-    log.warning("Source directory does not exist: %s", SRCDIR)
-    data_dirs_metrics = [(None, None, [])] # type: ignore
+skip_data = os.getenv("PETRIC_SKIP_DATA", False)
+if not SRCDIR.is_dir() or skip_data:
+    shortnames = {}
+    if not skip_data:
+        log.warning("Source directory does not exist: %s", SRCDIR)
 
 if __name__ != "__main__":
     # load up first data-set for people to play with
-    srcdir, outdir, metrics = data_dirs_metrics[0]
-    if srcdir is None:
-        data = None
-    else:
-        data = get_data(srcdir=srcdir, outdir=outdir)
-        metrics[0].reset()
+    data, metrics = None, []
+    for src, out in shortnames.items():
+        data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
+        metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
+        break
 else:
     from traceback import print_exc
 
@@ -368,17 +353,18 @@ else:
     redir.__enter__()
     from main import Submission, submission_callbacks
     assert issubclass(Submission, Algorithm)
-    for srcdir, outdir, metrics in data_dirs_metrics:
-        data = get_data(srcdir=srcdir, outdir=outdir)
-        metrics_with_timeout = metrics[0]
+    for src, out in shortnames.items():
+        # NB: `MetricsWithTimeout` contains `SaveIters` which creates `outdir`
+        cbk = MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])
+        data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
         if data.reference_image is not None:
-            metrics_with_timeout.callbacks.append(
+            cbk.callbacks.append(
                 QualityMetrics(data.reference_image, data.whole_object_mask, data.background_mask,
-                               tb_summary_writer=metrics_with_timeout.tb, voi_mask_dict=data.voi_masks))
-        metrics_with_timeout.reset(position=0) # timeout from now
+                               tb_summary_writer=cbk.tb, voi_mask_dict=data.voi_masks))
+        cbk.reset(position=0) # timeout from now
         algo = Submission(data, update_objective_interval=np.iinfo(np.int32).max)
         try:
-            algo.run(np.inf, callbacks=metrics + submission_callbacks)
+            algo.run(np.inf, callbacks=submission_callbacks + [cbk])
         except Exception:
             print_exc(limit=2)
         finally:
