@@ -99,7 +99,7 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC2/wiki
 > from main import Submission, submission_callbacks  # your submission (`main.py`)
 > from petric import data, metrics  # our data & evaluation
 > assert issubclass(Submission, cil.optimisation.algorithms.Algorithm)
-> Submission(data).run(numpy.inf, callbacks=metrics + submission_callbacks)
+> Submission(data).run(numpy.inf, callbacks=submission_callbacks + metrics)
 > ```
 
 <!-- br -->
