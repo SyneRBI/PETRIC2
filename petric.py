@@ -338,10 +338,10 @@ if not SRCDIR.is_dir() or skip_data:
 if __name__ != "__main__":
     # load up first data-set for people to play with
     data, metrics = None, []
-    for src, out in shortnames.items():
-        data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
-        metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
-        break
+    src = "NeuroLF_Esser_Dataset" # smallest download
+    out = shortnames[src]
+    data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
+    metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
 else:
     from traceback import print_exc
 

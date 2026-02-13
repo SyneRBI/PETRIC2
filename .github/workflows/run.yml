@@ -8,7 +8,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     env:
-      dataset: Siemens_mMR_NEMA_IQ
+      dataset: NeuroLF_Esser_Dataset
       image: ghcr.io/synerbi/sirf:petric2-base
     steps:
     - uses: actions/checkout@v6
