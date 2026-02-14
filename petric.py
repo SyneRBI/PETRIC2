@@ -339,9 +339,10 @@ if __name__ != "__main__":
     # load up first data-set for people to play with
     data, metrics = None, []
     src = "NeuroLF_Esser_Dataset" # smallest download
-    out = shortnames[src]
-    data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
-    metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
+    if src in shortnames:
+        out = shortnames[src]
+        data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
+        metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
 else:
     from traceback import print_exc
 
