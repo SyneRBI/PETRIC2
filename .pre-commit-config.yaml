@@ -53,6 +53,6 @@ repos:
     args: [-i]
     additional_dependencies: [toml]
 - repo: https://github.com/PyCQA/isort
-  rev: 7.0.0
+  rev: 8.0.0
   hooks:
   - id: isort
