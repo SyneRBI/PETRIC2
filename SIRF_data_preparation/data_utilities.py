@@ -174,7 +174,7 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
         # try to read STIR norm factors is acquisition data (which are 1/eff_factors)
         stir_norm_factors = pet.AcquisitionData(f_stir_norm)
         asm = pet.AcquisitionSensitivityModel(stir_norm_factors.power(-1))
-    except:
+    except Exception:
         # try to read as STIR supported vendor-norm file
         asm = pet.AcquisitionSensitivityModel(f_stir_norm)
 
