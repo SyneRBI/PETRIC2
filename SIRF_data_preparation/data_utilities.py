@@ -8,6 +8,7 @@ import importlib
 import logging
 import os
 import shutil
+from typing import Tuple
 
 from petric import SRCDIR
 
@@ -99,12 +100,13 @@ def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_
         shutil.copy(f_siemens_norm, intermediate_data_path)
     fix_siemens_norm_EOL(f_siemens_norm_header, f_stir_norm_header)
     prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_stir_attn_header,
-                                f_stir_norm, f_template, f_randoms, f_af, f_acf, f_scatter, [start, stop])
+                                f_stir_norm, f_template, f_randoms, f_af, f_acf, f_scatter, (start, stop))
 
 
 def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_attn_image, f_stir_norm,
                                 f_template, f_randoms, f_af='attenuation_factor', f_acf='attenuation_correction_factor',
-                                f_scatter='scatter', start_stop: list[int] | None = None):
+                                f_scatter='scatter', start_stop: Tuple[int, int] | None = None,
+                                scatter_min_max_scale: Tuple[float, float] = (0.4, 1.5)):
     '''Prepares list-mode data etc for SyneRBI PETRIC via sirf.STIR
 
     challenge_data_path: path to final prepared data
@@ -117,7 +119,8 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     f_af: attenuation factor file name (will be prefixed by intermediate_data_path)
     f_acf: attenuation correction factor file name (will be prefixed by intermediate_data_path)
     f_scatter: scatter estimate file name (will be prefixed by intermediate_data_path)
-    start_stop: start/end time for data acquisition (default: None means "use all data")
+    start_stop: start/end time (as a pair) for data acquisition (default: None means "use all data")
+    scatter_min_max_scale: min/max scale factor (as a pair) to use for scatter tail fitting
     '''
     # f_info = os.path.join(intermediate_data_path, 'info.txt')
     # f_warn = os.path.join(intermediate_data_path, 'warn.txt')
@@ -204,8 +207,8 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
         se.set_randoms(randoms)
         se.set_asm(asm)
         se.set_attenuation_correction_factors(acf)
-        se.set_max_scale_value(1.5)
-        se.set_min_scale_value(.4)
+        se.set_max_scale_value(scatter_min_max_scale[1])
+        se.set_min_scale_value(scatter_min_max_scale[0])
         se.set_num_iterations(4)
         se.set_OSEM_num_subsets(2)
         se.set_output_prefix(f_scatter)
