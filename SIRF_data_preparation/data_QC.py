@@ -144,6 +144,7 @@ def VOI_checks(allVOInames, OSEM_image=None, reference_image=None, VOIdir=None, 
     outdir defaults to VOIdir
     """
     if len(allVOInames) == 0:
+        print('No VOIs found')
         return
     if outdir is None:
         outdir = VOIdir
