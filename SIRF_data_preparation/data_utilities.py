@@ -52,61 +52,68 @@ def fix_siemens_norm_EOL(in_filename, out_filename):
         f.write(data)
 
 
-def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_data_path, f_root, f_listmode, f_mumap,
-                                   f_attn, f_norm, f_stir_norm, f_template, f_prompts, f_multfactors, f_additive,
-                                   f_randoms, f_af, f_acf, f_scatter, start, stop):
+def prepare_challenge_Siemens_data(data_path: str, challenge_data_path: str, intermediate_data_path: str, f_root: str,
+                                   f_listmode: str, f_mumap: str, f_norm: str, f_template: str,
+                                   fout_randoms: str = 'randoms', start_stop: Tuple[int, int] | None = None,
+                                   fout_af: str = 'attenuation_factor', fout_acf: str = 'attenuation_correction_factor',
+                                   fout_scatter: str = 'scatter', fout_stir_mumap_header: str | None = None,
+                                   fout_stir_norm_header: str | None = None):
     '''Prepares Siemens data for SyneRBI PETRIC
 
     data_path: path to Siemens data
     challenge_data_path: path to final prepared data
     intermediate_data_path: path to folder for temporary data
     f_root: common prefix for some data files' names (list-mode data, mu-maps etc.)
-    f_listmode: list-mode data file suffix
-    f_numap: mu-map file suffix
-    f_attn: mu-map header suffix
+    f_listmode: list-mode data file suffix (will be prefixed with {data_path}/f_root)
+    f_mumap: Siemens mu-map header suffix (will be prefixed with {data_path}/f_root) and '.hdr' appended.
+        WARNING: If the file does not exist, NAC recon will be used.
     f_norm: Siemens normalisation data file suffix
-    f_stir_norm: STIR normalisation data file name
-    f_template: template for prompts file name
-    f_prompts: IGNORED
-    f_multfactors: IGNORED
-    f_additive: IGNORED
-    f_randoms: estimated randoms file name
-    f_af: attenuation factor file name
-    f_acf: attenuation correction factor file name
-    f_scatter: scatter estimate file name
-    start: start time for data acquisition
-    stop: end time for data acquisition
+        (will be prefixed with {data_path}/f_root) and '.hdr' appended
+    f_template: template for prompts file name (no prefixes/suffices will be added)
+    fout_randoms: estimated randoms file name (will be prefixed by intermediate_data_path)
+    start_stop: start/end time (as a pair) for data acquisition (default: None means "use all data")
+    fout_af: attenuation factor file name
+    fout_acf: attenuation correction factor file name
+    fout_scatter: scatter estimate file name
+    fout_stir_mumap_header: STIR-converted mu-map header suffix
+        will be prefixed with {intermediate_data_path}/{f_root})
+    fout_stir_norm_header: STIR-converted norm header suffix
+        (will be prefixed with {intermediate_data_path}/{f_root})
     '''
-
-    logger.info(f"Start time for data: {start} sec")
-    logger.info(f"End time for data: {stop} sec")
 
     f_listmode = os.path.join(data_path, f_root + f_listmode)
     f_siemens_attn_image = os.path.join(data_path, f_root + f_mumap)
     f_siemens_attn_header = f_siemens_attn_image + '.hdr'
     f_siemens_norm = os.path.join(data_path, f_root + f_norm)
     f_siemens_norm_header = f_siemens_norm + '.hdr'
-    f_stir_norm_header = os.path.join(intermediate_data_path, f_stir_norm)
-    f_stir_attn_header = os.path.join(intermediate_data_path, f_root + f_attn)
+
+    if fout_stir_norm_header is None:
+        fout_stir_norm_header = f_norm + '_convertEOL.hdr'
+    fout_stir_norm_header = os.path.join(intermediate_data_path, f_root + fout_stir_norm_header)
+    if fout_stir_mumap_header is None:
+        fout_stir_mumap_header = f_mumap + '_stir'
+    fout_stir_mumap_header = os.path.join(intermediate_data_path, f_root + fout_stir_mumap_header)
 
     if os.path.exists(f_siemens_attn_image):
         if data_path != intermediate_data_path:
             shutil.copy(f_siemens_attn_image, intermediate_data_path)
-        os.system('convertSiemensInterfileToSTIR.sh ' + f_siemens_attn_header + ' ' + f_stir_attn_header)
+        os.system('convertSiemensInterfileToSTIR.sh ' + f_siemens_attn_header + ' ' + fout_stir_mumap_header)
     else:
         print(f"WARNING: {f_siemens_attn_image} not found. NAC only")
 
     if data_path != intermediate_data_path:
         shutil.copy(f_siemens_norm, intermediate_data_path)
-    fix_siemens_norm_EOL(f_siemens_norm_header, f_stir_norm_header)
-    prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_stir_attn_header,
-                                f_stir_norm, f_template, f_randoms, f_af, f_acf, f_scatter, (start, stop))
+    fix_siemens_norm_EOL(f_siemens_norm_header, fout_stir_norm_header)
+    prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, fout_stir_mumap_header,
+                                fout_stir_norm_header, f_template, fout_randoms, start_stop, fout_af, fout_acf,
+                                fout_scatter)
 
 
-def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_attn_image, f_stir_norm,
-                                f_template, f_randoms, f_af='attenuation_factor', f_acf='attenuation_correction_factor',
-                                f_scatter='scatter', start_stop: Tuple[int, int] | None = None,
-                                scatter_min_max_scale: Tuple[float, float] = (0.4, 1.5)):
+def prepare_challenge_STIR_data(challenge_data_path: str, intermediate_data_path: str, f_listmode: str,
+                                f_attn_image: str, f_stir_norm: str, f_template: str, f_randoms: str | None = None,
+                                start_stop: Tuple[int, int] | None = None, fout_af: str = 'attenuation_factor',
+                                fout_acf: str = 'attenuation_correction_factor', fout_scatter: str = 'scatter',
+                                fout_randoms: str = 'randoms', scatter_min_max_scale: Tuple[float, float] = (0.4, 1.5)):
     '''Prepares list-mode data etc for SyneRBI PETRIC via sirf.STIR
 
     challenge_data_path: path to final prepared data
@@ -116,10 +123,12 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     f_stir_norm: (full) STIR normalisation data file name, can be STIR normalisation factors as a sinogram
     f_template: (full) template for prompts file name
     f_randoms: estimated randoms file name (will be prefixed by intermediate_data_path)
-    f_af: attenuation factor file name (will be prefixed by intermediate_data_path)
-    f_acf: attenuation correction factor file name (will be prefixed by intermediate_data_path)
-    f_scatter: scatter estimate file name (will be prefixed by intermediate_data_path)
+        if None, the randoms will be estimated from the list-mode data
     start_stop: start/end time (as a pair) for data acquisition (default: None means "use all data")
+    fout_af: attenuation factor file name (will be prefixed by intermediate_data_path)
+    fout_acf: attenuation correction factor file name (will be prefixed by intermediate_data_path)
+    fout_scatter: scatter estimate file name (will be prefixed by intermediate_data_path)
+    fout_randoms: output randoms estimate file name (will be prefixed by intermediate_data_path)
     scatter_min_max_scale: min/max scale factor (as a pair) to use for scatter tail fitting
     '''
     # f_info = os.path.join(intermediate_data_path, 'info.txt')
@@ -128,9 +137,9 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     f_prompts = os.path.join(challenge_data_path, 'prompts.hs')
     f_multfactors = os.path.join(challenge_data_path, 'mult_factors.hs')
     f_additive = os.path.join(challenge_data_path, 'additive_term.hs')
-    f_af = os.path.join(intermediate_data_path, f_af)
-    f_acf = os.path.join(intermediate_data_path, f_acf)
-    f_scatter = os.path.join(intermediate_data_path, f_scatter)
+    fout_af = os.path.join(intermediate_data_path, fout_af)
+    fout_acf = os.path.join(intermediate_data_path, fout_acf)
+    fout_scatter = os.path.join(intermediate_data_path, fout_scatter)
 
     # read acquisition data template
     acq_data_template = pet.AcquisitionData(f_template)
@@ -138,7 +147,7 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     # filename as written by ListmodeToSinograms
     output_prefix = os.path.join(intermediate_data_path, "prompts")
     f_prompts_tmp = output_prefix + '_f1g1d0b0.hs'
-    if os.path.exists(f_prompts_tmp) and os.path.exists(f_randoms):
+    if os.path.exists(f_prompts_tmp) and f_randoms is not None and os.path.exists(f_randoms):
         logger.info("Using existing prompts and randoms data...")
         print("Using existing prompts and randoms data.")
         prompts = pet.AcquisitionData(f_prompts_tmp)
@@ -168,10 +177,10 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     logger.info('prompts norm: %f' % prompts.norm())
     logger.info('randoms norm: %f' % randoms.norm())
 
-    f_randoms = os.path.join(intermediate_data_path, 'randoms.hs')
-    logger.info(f'writing prompts to {f_prompts} and randoms to {f_randoms}')
+    fout_randoms = os.path.join(intermediate_data_path, fout_randoms)
+    logger.info(f'writing prompts to {f_prompts} and randoms to {fout_randoms}')
     prompts.write(f_prompts)
-    randoms.write(f_randoms)
+    randoms.write(fout_randoms)
 
     try:
         # try to read STIR norm factors is acquisition data (which are 1/eff_factors)
@@ -196,10 +205,10 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
         acf = af.power(-1)
         logger.info('norm of the attenuation factor: %f' % af.norm())
         logger.info('norm of the attenuation correction factor: %f' % acf.norm())
-        logger.info(f'writing intermediate attenuation factors to {f_af}')
-        logger.info(f'writing intermediate attenuation coefficient factors to {f_acf}')
-        af.write(f_af)
-        acf.write(f_acf)
+        logger.info(f'writing intermediate attenuation factors to {fout_af}')
+        logger.info(f'writing intermediate attenuation coefficient factors to {fout_acf}')
+        af.write(fout_af)
+        acf.write(fout_acf)
 
         se = pet.ScatterEstimator()
         se.set_input(prompts)
@@ -211,7 +220,7 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
         se.set_min_scale_value(scatter_min_max_scale[0])
         se.set_num_iterations(4)
         se.set_OSEM_num_subsets(2)
-        se.set_output_prefix(f_scatter)
+        se.set_output_prefix(fout_scatter)
         se.set_up()
         se.process()
         scatter = se.get_output()
