@@ -33,9 +33,8 @@ f_norm = '1.3.12.2.1107.5.2.38.51008.30000023092004393989000000002.n'
 f_listmode = '1.3.12.2.1107.5.2.38.51008.30000023092004393989000000003.l.hdr'
 f_attn_image = 'reg_mumap.hv'
 # %% first run first without mu-map for NAC reconstruction
-prepare_challenge_Siemens_data(extracted_data_path, fullcounts_data_path, intermediate_data_path, '', f_listmode,
-                               'nonexistent', 'reg_mumap.hv', f_norm, f_template, 'prompts', 'mult_factors',
-                               'additive_term', None, 'attenuation_factor', 'attenuation_correction_factor', 'scatter')
+prepare_challenge_Siemens_data(extracted_data_path, fullcounts_data_path, intermediate_data_path, f_root='',
+                               f_listmode=f_listmode, f_mumap='nonexistent', f_norm=f_norm, f_template=f_template)
 # %% do NAC recon
 f_prompts = os.path.join(fullcounts_data_path, 'prompts.hs')
 acquired_data = STIR.AcquisitionData(f_prompts)
@@ -49,6 +48,7 @@ create_initial_images.run(outdir=intermediate_data_path, acquired_data=acquired_
 # as opposed to relying on the SIRF conversion from/to Reg.ImageData and STIR.ImageData,
 # as this is likely still buggy at this point.
 # write current NAC OSEM image as Nifti
+# (Note that create_initial_images writes the images as OSEM_images.hv, even if it's NAC)
 NAC_image = STIR.ImageData(os.path.join(intermediate_data_path, 'OSEM_image.hv'))
 NAC_image_filename_stem = os.path.join(intermediate_data_path, 'NAC_image')
 NAC_image_filename = NAC_image_filename_stem + '.nii'
@@ -101,6 +101,7 @@ data_QC.plot_image(NAC_image, save_name=NAC_image_filename_stem, vmax=NAC_image.
 # %%
 data_QC.plot_image(reg_mumap, save_name=reg_mumap_filename_stem)
 # %% re-run the list-mode processing, now with mu-map, such that we get proper AC and scatter correction
+# we use prepare_challenge_STIR_data to avoid the fixes of the Siemens files etc
 f_stir_norm_header = os.path.join(intermediate_data_path, f_norm + '_convertEOL.hdr')
 prepare_challenge_STIR_data(fullcounts_data_path, intermediate_data_path, os.path.join(extracted_data_path, f_listmode),
                             reg_mumap_filename, f_stir_norm_header, f_template=f_prompts, f_randoms=None)
