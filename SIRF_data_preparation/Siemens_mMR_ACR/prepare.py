@@ -38,9 +38,8 @@ if __name__ == '__main__':
     os.chdir(output_path)
     os.makedirs(intermediate_data_path, exist_ok=True)
 
-    f_template = os.path.join(data_path, 'mMR_template_span11.hs')
+    f_template = os.path.join(STIR.get_STIR_examples_dir(), 'Siemens-mMR', 'template_span11.hs')
 
-    prepare_challenge_Siemens_data(data_path, output_path, intermediate_data_path, '', 'list.l.hdr', 'reg_mumap.v',
-                                   'reg_mumap.hv', 'norm.n', 'norm.n.hdr', f_template, 'prompts', 'mult_factors',
-                                   'additive_term', 'randoms', 'attenuation_factor', 'attenuation_correction_factor',
-                                   'scatter', start, end)
+    prepare_challenge_Siemens_data(data_path, output_path, intermediate_data_path, '', 'list.l.hdr', 'reg_mumap.hv',
+                                   'norm.n', f_template, 'prompts', 'mult_factors', 'additive_term', 'randoms',
+                                   'attenuation_factor', 'attenuation_correction_factor', 'scatter', (start, end))

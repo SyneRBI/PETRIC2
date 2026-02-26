@@ -53,8 +53,8 @@ def fix_siemens_norm_EOL(in_filename, out_filename):
 
 
 def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_data_path, f_root, f_listmode, f_mumap,
-                                   f_attn, f_norm, f_stir_norm, f_template, f_prompts, f_multfactors, f_additive,
-                                   f_randoms, f_af, f_acf, f_scatter, start, stop):
+                                   f_attn, f_norm, f_template, f_prompts, f_multfactors, f_additive, f_randoms, f_af,
+                                   f_acf, f_scatter, start_stop: Tuple[int, int] | None = None):
     '''Prepares Siemens data for SyneRBI PETRIC
 
     data_path: path to Siemens data
@@ -62,10 +62,8 @@ def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_
     intermediate_data_path: path to folder for temporary data
     f_root: common prefix for some data files' names (list-mode data, mu-maps etc.)
     f_listmode: list-mode data file suffix
-    f_numap: mu-map file suffix
     f_attn: mu-map header suffix
     f_norm: Siemens normalisation data file suffix
-    f_stir_norm: STIR normalisation data file name
     f_template: template for prompts file name
     f_prompts: IGNORED
     f_multfactors: IGNORED
@@ -74,19 +72,15 @@ def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_
     f_af: attenuation factor file name
     f_acf: attenuation correction factor file name
     f_scatter: scatter estimate file name
-    start: start time for data acquisition
-    stop: end time for data acquisition
+    start_stop: start/end time (as a pair) for data acquisition (default: None means "use all data")
     '''
-
-    logger.info(f"Start time for data: {start} sec")
-    logger.info(f"End time for data: {stop} sec")
 
     f_listmode = os.path.join(data_path, f_root + f_listmode)
     f_siemens_attn_image = os.path.join(data_path, f_root + f_mumap)
     f_siemens_attn_header = f_siemens_attn_image + '.hdr'
     f_siemens_norm = os.path.join(data_path, f_root + f_norm)
     f_siemens_norm_header = f_siemens_norm + '.hdr'
-    f_stir_norm_header = os.path.join(intermediate_data_path, f_stir_norm)
+    f_stir_norm_header = os.path.join(intermediate_data_path, f_root + f_norm + '_convertEOL.hdr')
     f_stir_attn_header = os.path.join(intermediate_data_path, f_root + f_attn)
 
     if os.path.exists(f_siemens_attn_image):
@@ -100,7 +94,7 @@ def prepare_challenge_Siemens_data(data_path, challenge_data_path, intermediate_
         shutil.copy(f_siemens_norm, intermediate_data_path)
     fix_siemens_norm_EOL(f_siemens_norm_header, f_stir_norm_header)
     prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_stir_attn_header,
-                                f_stir_norm, f_template, f_randoms, f_af, f_acf, f_scatter, (start, stop))
+                                f_stir_norm_header, f_template, f_randoms, f_af, f_acf, f_scatter, start_stop)
 
 
 def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, f_attn_image, f_stir_norm,
@@ -138,7 +132,7 @@ def prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_l
     # filename as written by ListmodeToSinograms
     output_prefix = os.path.join(intermediate_data_path, "prompts")
     f_prompts_tmp = output_prefix + '_f1g1d0b0.hs'
-    if os.path.exists(f_prompts_tmp) and os.path.exists(f_randoms):
+    if os.path.exists(f_prompts_tmp) and f_randoms is not None and os.path.exists(f_randoms):
         logger.info("Using existing prompts and randoms data...")
         print("Using existing prompts and randoms data.")
         prompts = pet.AcquisitionData(f_prompts_tmp)
