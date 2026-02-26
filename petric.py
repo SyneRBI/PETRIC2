@@ -313,6 +313,7 @@ shortnames = {
     "Siemens_mMR_ACR": "mMR_ACR",
     "Siemens_mMR_NEMA_IQ": "mMR_NEMA",
     "Siemens_Vision600_Hoffman": "Vision600_Hoffman",
+    "Siemens_Vision600_Hoffman2": "Vision600_Hoffman2",
     "Siemens_Vision600_thorax": "Vision600_thorax",
     "Siemens_Vision600_ZrNEMAIQ": "Vision600_ZrNEMA"}
 DATA_SLICES = {
@@ -329,6 +330,7 @@ DATA_SLICES = {
     'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
     'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
     'Siemens_Vision600_Hoffman': {},
+    'Siemens_Vision600_Hoffman2': {},
     'Siemens_Vision600_thorax': {},
     'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}}
 # yapf: enable
