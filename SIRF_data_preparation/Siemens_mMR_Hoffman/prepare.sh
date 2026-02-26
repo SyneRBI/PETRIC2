@@ -11,10 +11,9 @@ python -m SIRF_data_preparation.${dataset}.prepare
 
 fullcounts_DIR=${tmpPETRIC_SRCDIR}/${dataset}/fullcounts
 cd ${fullcounts_DIR}
-ln -s ../VOIs PETRIC
-cd ..
-PETRIC_SRCDIR=${tmpPETRIC_SRCDIR} python -m SIRF_data_preparation.create_initial_images ${fullcounts_DIR}/
-list_image_info ${tmpPETRIC_SRCDIR}/fullcounts/OSEM_image.hv
-# MANUAL: edit dataset_settings.py and petric.py, limits on based on max above, set preferred_scaling to 1 to get descent images
+list_image_info OSEM_image.hv
+# MANUAL: edit dataset_settings.py and petric.py, limits based on max above, set preferred_scaling to 1 to get descent images from data_QC
+mkdir -p PETRIC
+PETRIC_SRCDIR=${tmpPETRIC_SRCDIR} python -m SIRF_data_preparation.create_Hoffman_VOIs --dataset ${dataset} --srcdir ${fullcounts_DIR}
 PETRIC_SRCDIR=${tmpPETRIC_SRCDIR} python -m SIRF_data_preparation.data_QC --dataset ${dataset} --srcdir ${fullcounts_DIR} --VOIdir ${fullcounts_DIR}/PETRIC
-# MANUAL: edit dataset_settings.py preferred_scaling to ratio of total counts in ${fullcounts_DIR}/prompts.hs and $PETRIC_SRCDIR/NeuroLF_Hoffman_Dataset/prompts.hs
+# MANUAL: edit dataset_settings.py preferred_scaling to ratio of total counts in ${fullcounts_DIR}/prompts.hs and $PETRIC_SRCDIR/Siemens_mMR_ACR/prompts.hs

@@ -105,16 +105,15 @@ f_stir_norm_header = os.path.join(intermediate_data_path, f_norm + '_convertEOL.
 prepare_challenge_STIR_data(fullcounts_data_path, intermediate_data_path, os.path.join(extracted_data_path, f_listmode),
                             reg_mumap_filename, f_stir_norm_header, f_template=f_prompts, f_randoms=None)
 
-# %% create final images. Need to do something about template
+# %% create final images. Use zoom=2 in x,y to get close to vendor voxel-size, and crop some air
 acquired_data = STIR.AcquisitionData(f_prompts)
 additive_term = STIR.AcquisitionData(os.path.join(fullcounts_data_path, 'additive_term.hs'))
 mult_factors = STIR.AcquisitionData(os.path.join(fullcounts_data_path, 'mult_factors.hs'))
+template_image = acquired_data.create_uniform_image(0)
+template_image = template_image.zoom_image(zooms=(1, 2, 2), size=(127, 255, 255))
 create_initial_images.run(outdir=fullcounts_data_path, acquired_data=acquired_data, additive_term=additive_term,
-                          mult_factors=mult_factors, template_image=acquired_data.create_uniform_image(0))
-
+                          mult_factors=mult_factors, template_image=template_image)
 # %%
-# MANUAL: edit dataset_settings.py and petric.py, limits based on max above, set preferred_scaling to 1 to get descent images from data_QC
-# mkdir PETRIC
-# PETRIC_SRCDIR=${tmpPETRIC_SRCDIR} python -m SIRF_data_preparation.create_Hoffman_VOIs --dataset ${dataset} --srcdir ${fullcounts_DIR}
-# PETRIC_SRCDIR=${tmpPETRIC_SRCDIR} python -m SIRF_data_preparation.data_QC --dataset ${dataset} --srcdir ${fullcounts_DIR} --VOIdir ${fullcounts_DIR}/PETRIC
-# MANUAL: edit dataset_settings.py preferred_scaling to ratio of total counts in ${fullcounts_DIR}/prompts.hs and $PETRIC_SRCDIR/Siemens_Vision600_Hoffman/prompts.hs
+OSEM_image = STIR.ImageData(os.path.join(fullcounts_data_path, 'OSEM_image.hv'))
+print(OSEM_image.max())
+data_QC.plot_image(OSEM_image)
