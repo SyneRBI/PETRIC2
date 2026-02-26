@@ -9,7 +9,7 @@ Options:
   -h, --help
   --dataset=<name>              dataset name (required)
   --srcdir=<path>               pathname. Will default to current directory unless dataset is set
-  -s, --skip_write_PETRIC_VOIs  do not write in data/<dataset>/PETRIC
+  -s, --skip_write_PETRIC_VOIs  do not write in <srcdir>/PETRIC
 """
 
 # Copyright 2024 University College London
