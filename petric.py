@@ -18,6 +18,7 @@ import csv
 import logging
 import os
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path, PurePath
 from time import time
@@ -317,7 +318,7 @@ shortnames = {
     "Siemens_Vision600_Hoffman2": "Vision600_Hoffman2",
     "Siemens_Vision600_thorax": "Vision600_thorax",
     "Siemens_Vision600_ZrNEMAIQ": "Vision600_ZrNEMA"}
-DATA_SLICES = {
+DATA_SLICES = defaultdict(dict, {
     'GE_D690_NEMA_IQ': {'transverse_slice': 23},
     'GE_DMI3_Torso': {'transverse_slice': 10},
     'GE_DMI4_NEMA_IQ': {'transverse_slice': 27, 'coronal_slice': 109, 'sagittal_slice': 78},
@@ -330,11 +331,7 @@ DATA_SLICES = {
     'Siemens_mMR_ACR': {'transverse_slice': 99},
     'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
     'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
-    'Siemens_mMR_Hoffman': {},
-    'Siemens_Vision600_Hoffman': {},
-    'Siemens_Vision600_Hoffman2': {},
-    'Siemens_Vision600_thorax': {},
-    'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}}
+    'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}})
 # yapf: enable
 
 skip_data = os.getenv("PETRIC_SKIP_DATA", False)

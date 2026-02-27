@@ -15,7 +15,7 @@ Options:
   --interval=<i>              interval to save [default: 3]
   --outreldir=<relpath>       optional relative path to override
                               (defaults to 'LBFGSBPC' or 'LBFGSBPC_cont' if initial_image is set)
-  --penalisation_factor_multiplier=<f> factor to multiply the default penalisation factor with [default: 1]
+  --penalisation_factor_multiplier=<f>  factor to multiply the default penalisation factor with [default: 1]
                               (use with caution: You will likely want to specify outreldir)
 """
 # Copyright 2024 Rutherford Appleton Laboratory STFC
