@@ -35,6 +35,7 @@ import sirf.STIR as STIR
 from cil.optimisation.algorithms import Algorithm
 from cil.optimisation.utilities import callbacks as cil_callbacks
 from img_quality_cil_stir import ImageQualityCallback
+from SIRF_data_preparation.dataset_settings import get_settings
 
 log = logging.getLogger('petric')
 TEAM = re.split("/PETRIC[0-9]*-?", os.getenv("GITHUB_REPOSITORY", ""), maxsplit=1)[-1] or "SyneRBI"
@@ -188,14 +189,14 @@ class QualityMetrics(ImageQualityCallback, Callback):
 class MetricsWithTimeout(Callback):
     """Stops the algorithm after `seconds`"""
     def __init__(self, seconds=600, outdir=OUTDIR, transverse_slice=None, coronal_slice=None, sagittal_slice=None,
-                 tqdm_class=tqdm, **kwargs):
+                 vmax=None, tqdm_class=tqdm, **kwargs):
         super().__init__(**kwargs)
         self._seconds = seconds
         self.callbacks = [
             cil_callbacks.ProgressCallback(desc=f"{TEAM}/{VERSION}/{outdir.name}", tqdm_class=tqdm_class),
             SaveIters(outdir=outdir, **kwargs),
             (tb_cbk := StatsLog(logdir=outdir, transverse_slice=transverse_slice, coronal_slice=coronal_slice,
-                                sagittal_slice=sagittal_slice, **kwargs))]
+                                sagittal_slice=sagittal_slice, vmax=vmax, **kwargs))]
         self.tb = tb_cbk.tb # convenient access to the underlying SummaryWriter
         self.reset()
 
@@ -346,8 +347,10 @@ if __name__ != "__main__":
     src = "NeuroLF_Esser_Dataset" # smallest download
     if src in shortnames:
         out = shortnames[src]
+        settings = get_settings(src)
+        metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **settings.slices, vmax=settings.vmax)]
         data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
-        metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])]
+        metrics[0].reset()        # timeout from now
 else:
     from traceback import print_exc
 
@@ -360,8 +363,9 @@ else:
     from main import Submission, submission_callbacks
     assert issubclass(Submission, Algorithm)
     for src, out in shortnames.items():
+        settings = get_settings(src)
         # NB: `MetricsWithTimeout` contains `SaveIters` which creates `outdir`
-        cbk = MetricsWithTimeout(outdir=OUTDIR / out, **DATA_SLICES[src])
+        cbk = MetricsWithTimeout(outdir=OUTDIR / out, **settings.slices, vmax=settings.vmax)
         data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
         if data.reference_image is not None:
             cbk.callbacks.append(
