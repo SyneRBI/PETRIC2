@@ -16,11 +16,11 @@ Options:
   --transverse_slice=<i>  idx [default: -1]
   --coronal_slice=<c>    idx [default: -1]
   --sagittal_slice=<s>   idx [default: -1]
-  --vmax=<vmax>          max in colourbar [default: -1]
+  --vmax=<vmax>          max in colourbar (default: None)
 
 Note that a slice index of -1 one means to use the dataset settings, and if those do not exist,
 use the middle of image.
-Similarly, if vmax = -1, use the dataset settings, and if it does not exist, use percentile of the max
+Similarly, if vmax = None, use the dataset settings, and if it does not exist, use percentile of the max
 """
 # Copyright 2024-2025 University College London
 # Licence: Apache-2.0
@@ -238,7 +238,7 @@ def main(argv=None):
     slices["transverse_slice"] = literal_eval(args['--transverse_slice'])
     slices["coronal_slice"] = literal_eval(args['--coronal_slice'])
     slices["sagittal_slice"] = literal_eval(args['--sagittal_slice'])
-    vmax = literal_eval(args['--vmax'])
+    vmax = literal_eval(args['--vmax']) if args['--vmax'] is not None else None
 
     if (dataset):
         if srcdir is None:
@@ -249,16 +249,13 @@ def main(argv=None):
                 slices[key] = settings.slices[key]
         if VOIdir is None:
             VOIdir = the_data_path(dataset, 'PETRIC')
-        if vmax <= 0:
+        if vmax is None:
             vmax = settings.vmax
     else:
         if srcdir is None:
             srcdir = os.getcwd()
         if VOIdir is None:
             VOIdir = os.path.join(srcdir, 'PETRIC')
-
-    if vmax <= 0:
-        vmax = None # plot functions will use percentile
 
     if not skip_sino_profiles:
         acquired_data = STIR.AcquisitionData(os.path.join(srcdir, 'prompts.hs'))
