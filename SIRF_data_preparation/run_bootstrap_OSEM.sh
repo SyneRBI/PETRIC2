@@ -2,7 +2,6 @@
 # Script to run Poisson resampling bootstrapping for a dataset, for different scale factors and repetitions
 # and zip up all the results
 
-export PETRIC_SKIP_DATA=1
 dataset=$1
 sfs="$2"
 reps="$3"

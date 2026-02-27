@@ -18,7 +18,6 @@ import csv
 import logging
 import os
 import re
-from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path, PurePath
 from time import time
@@ -302,52 +301,19 @@ def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
                    whole_object_mask, background_mask, voi_masks, FOV_mask, srcdir.resolve())
 
 
-# yapf: disable
-shortnames = {
-    "GE_D690_NEMA_IQ": "D690_NEMA",
-    "GE_DMI3_Torso": "DMI3_Torso",
-    "GE_DMI4_NEMA_IQ": "DMI4_NEMA",
-    "Mediso_NEMA_IQ": "Mediso_NEMA",
-    "NeuroLF_Esser_Dataset": "NeuroLF_Esser",
-    "NeuroLF_Hoffman_Dataset": "NeuroLF_Hoffman",
-    "NeuroLF_Esser2": "NeuroLF_Esser2",
-    "NeuroLF_Hoffman2": "NeuroLF_Hoffman2",
-    "Siemens_mMR_ACR": "mMR_ACR",
-    "Siemens_mMR_NEMA_IQ": "mMR_NEMA",
-    "Siemens_mMR_Hoffman": "mMR_Hoffman",
-    "Siemens_Vision600_Hoffman": "Vision600_Hoffman",
-    "Siemens_Vision600_Hoffman2": "Vision600_Hoffman2",
-    "Siemens_Vision600_thorax": "Vision600_thorax",
-    "Siemens_Vision600_ZrNEMAIQ": "Vision600_ZrNEMA"}
-DATA_SLICES = defaultdict(dict, {
-    'GE_D690_NEMA_IQ': {'transverse_slice': 23},
-    'GE_DMI3_Torso': {'transverse_slice': 10},
-    'GE_DMI4_NEMA_IQ': {'transverse_slice': 27, 'coronal_slice': 109, 'sagittal_slice': 78},
-    'Mediso_NEMA_IQ_lowcounts': {'transverse_slice': 22, 'coronal_slice': 74, 'sagittal_slice': 70},
-    'Mediso_NEMA_IQ': {'transverse_slice': 22, 'coronal_slice': 89, 'sagittal_slice': 66},
-    'NeuroLF_Esser_Dataset': {'transverse_slice': 20},
-    'NeuroLF_Esser2': {'transverse_slice': 20},
-    'NeuroLF_Hoffman_Dataset': {'transverse_slice': 72},
-    'NeuroLF_Hoffman2': {'transverse_slice': 72},
-    'Siemens_mMR_ACR': {'transverse_slice': 99},
-    'Siemens_mMR_NEMA_IQ_lowcounts': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
-    'Siemens_mMR_NEMA_IQ': {'transverse_slice': 72, 'coronal_slice': 109, 'sagittal_slice': 89},
-    'Siemens_Vision600_ZrNEMAIQ': {'transverse_slice': 60}})
-# yapf: enable
-
-skip_data = os.getenv("PETRIC_SKIP_DATA", False)
-if not SRCDIR.is_dir() or skip_data:
-    shortnames = {}
-    if not skip_data:
-        log.warning("Source directory does not exist: %s", SRCDIR)
+if not SRCDIR.is_dir():
+    DATA: dict[str, dict[str, object]] = {}
+    log.warning("Source directory does not exist: %s", SRCDIR)
+else:
+    from SIRF_data_preparation.dataset_settings import DATA
 
 if __name__ != "__main__":
     # load up first data-set for people to play with
     data, metrics = None, []
     src = "NeuroLF_Esser_Dataset" # smallest download
-    if src in shortnames:
-        out = shortnames[src]
+    if src in DATA.keys():
         settings = get_settings(src)
+        out = settings.name
         metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **settings.slices, vmax=settings.vmax)]
         data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
         metrics[0].reset()        # timeout from now
@@ -362,8 +328,9 @@ else:
     redir.__enter__()
     from main import Submission, submission_callbacks
     assert issubclass(Submission, Algorithm)
-    for src, out in shortnames.items():
+    for src in DATA.keys():
         settings = get_settings(src)
+        out = settings.name
         # NB: `MetricsWithTimeout` contains `SaveIters` which creates `outdir`
         cbk = MetricsWithTimeout(outdir=OUTDIR / out, **settings.slices, vmax=settings.vmax)
         data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
