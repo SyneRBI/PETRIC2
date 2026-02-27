@@ -301,24 +301,23 @@ def get_data(srcdir=".", outdir=OUTDIR, sirf_verbosity=0, read_sinos=True):
                    whole_object_mask, background_mask, voi_masks, FOV_mask, srcdir.resolve())
 
 
-skip_data = os.getenv("PETRIC_SKIP_DATA", False)
-if not SRCDIR.is_dir() or skip_data:
+if not SRCDIR.is_dir():
     DATA: dict[str, dict[str, object]] = {}
-    if not skip_data:
-        log.warning("Source directory does not exist: %s", SRCDIR)
+    log.warning("Source directory does not exist: %s", SRCDIR)
 else:
     from SIRF_data_preparation.dataset_settings import DATA
 
 if __name__ != "__main__":
     # load up first data-set for people to play with
-    data, metrics = None, []
-    src = "NeuroLF_Esser_Dataset" # smallest download
+    data, metrics, src = None, [], ""
+    if not os.getenv("PETRIC_SKIP_DATA", False):
+        src = "NeuroLF_Esser_Dataset" # smallest download
     if src in DATA.keys():
         settings = get_settings(src)
         out = settings.name
         metrics = [MetricsWithTimeout(outdir=OUTDIR / out, **settings.slices, vmax=settings.vmax)]
         data = get_data(srcdir=SRCDIR / src, outdir=OUTDIR / out)
-        metrics[0].reset()        # timeout from now
+        metrics[0].reset()            # timeout from now
 else:
     from traceback import print_exc
 
