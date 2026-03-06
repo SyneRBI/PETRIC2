@@ -59,8 +59,11 @@ or create a Python equivalent.
    Optionally add argument `--template_image=<some_image>`, this defaults to `PETRIC/VOI_whole_object.hv`.
    (If you need to create VOIs yourself, you can use `None` or the vendor image).
 4. Edit `OSEM_image.hv` to add modality, radionuclide and duration info which got lost (copy from `prompts.hs`)
-5. Edit [dataset_settings.py](dataset_settings.py) for subsets (used by our BSREM reference reconstructions only, *not* by participants), `PETRIC1_clims` for hand-tuned colour-scale max, and `preferred_scaling` for the scale factor used in the bootstrapping.
-6. If not PETRIC1 data, edit [petric.py](../petric.py) for slices to use for creating figures (`DATA_SLICES`). Note that `data_QC` outputs centre-of-mass of the VOIs, which can be helpful for this.
+5. Edit [dataset_settings.py](dataset_settings.py) for
+   - `subsets` (used by our BSREM reference reconstructions only, *not* by participants)
+   - `clim` for hand-tuned colour-scale max
+   - `scale` for the scale factor used in the bootstrapping
+   - `slices` for slices to use for creating figures (note that `data_QC` outputs centre-of-mass of the VOIs, which can be helpful for this)
 7. If not available yet, make VOIs, e.g.
    ```
    python -m SIRF_data_preparation.create_Hoffman_VOIs --dataset=<datasetname>
