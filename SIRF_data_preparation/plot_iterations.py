@@ -41,7 +41,8 @@ from SIRF_data_preparation.evaluation_utilities import get_metrics, plot_metrics
 STIR.AcquisitionData.set_storage_scheme('memory')
 STIR.set_verbosity(0)
 # %% set this to True when running from vscode or similar and adapt settings below
-manual_settings = True
+# manual_settings = True
+manual_settings = False
 # %%
 if not manual_settings and __name__ == '__main__':
     args = docopt(__doc__, version=__version__)
