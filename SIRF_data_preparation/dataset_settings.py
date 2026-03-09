@@ -6,6 +6,7 @@ from dataclasses import dataclass
 DATA = {
     'GE_D690_NEMA_IQ': {'subsets': 16, 'name': "D690_NEMA", 'slices': {'transverse': 23}, 'clim': 1, 'scale': 1e-1},
     'GE_DMI3_Torso': {'subsets': 8, 'name': "DMI3_Torso", 'slices': {'transverse': 10}, 'clim': 3.5, 'scale': 1e-1},
+    'GE_DMI3_Torso2': {'subsets': 8, 'name': "DMI3_Torso", 'slices': {'transverse': 10}, 'clim': 3.5, 'scale': 1e-1},
     'GE_DMI4_NEMA_IQ': {'subsets': 8, 'name': "DMI4_NEMA", 'slices': {'transverse': 27, 'coronal': 109, 'sagittal': 78}, 'clim': 1, 'scale': 1e-1},
     'Mediso_NEMA_IQ_lowcounts': {'subsets': 6, 'name': "Mediso_NEMA-low", 'slices': {'transverse': 22, 'coronal': 74, 'sagittal': 70}},
     'Mediso_NEMA_IQ': {'subsets': 12, 'name': "Mediso_NEMA", 'slices': {'transverse': 22, 'coronal': 89, 'sagittal': 66}, 'clim': 2.5, 'scale': 1e-2},
