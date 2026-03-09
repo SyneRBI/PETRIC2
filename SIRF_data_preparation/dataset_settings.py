@@ -14,6 +14,7 @@ DATA = {
     'NeuroLF_Hoffman_Dataset': {'subsets': 16, 'name': "NeuroLF_Hoffman", 'slices': {'transverse': 72}, 'clim': 2, 'scale': 1e-2},
     'NeuroLF_Hoffman2': {'subsets': 16, 'slices': {'transverse': 72}, 'clim': 1.2, 'scale': 6.87569e+06 / 3.16697e+08},
     'Siemens_mMR_ACR': {'subsets': 7, 'name': "mMR_ACR", 'slices': {'transverse': 99}, 'clim': 3e-2, 'scale': 1e-1},
+    'Siemens_mMR_ACR2': {'subsets': 7, 'name': "mMR_ACR2", 'slices': {'transverse': 99}, 'clim': 0.23, 'scale': 2.02743e+06 / 2.90755e+08},
     'Siemens_mMR_Hoffman': {'subsets': 7, 'name': "mMR_Hoffman", 'clim': 1.4, 'scale': 2.02743e+06 / 3.20694e+06},
     'Siemens_mMR_NEMA_IQ_lowcounts': {'subsets': 7, 'name': "mMR_NEMA-low", 'slices': {'transverse': 72, 'coronal': 109, 'sagittal': 89}},
     'Siemens_mMR_NEMA_IQ': {'subsets': 7, 'name': "mMR_NEMA", 'slices': {'transverse': 72, 'coronal': 109, 'sagittal': 89}, 'clim': 0.2, 'scale': 1e-1},
