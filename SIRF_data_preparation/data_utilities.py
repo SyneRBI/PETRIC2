@@ -105,8 +105,8 @@ def prepare_challenge_Siemens_data(data_path: str, challenge_data_path: str, int
         shutil.copy(f_siemens_norm, intermediate_data_path)
     fix_siemens_norm_EOL(f_siemens_norm_header, fout_stir_norm_header)
     prepare_challenge_STIR_data(challenge_data_path, intermediate_data_path, f_listmode, fout_stir_mumap_header,
-                                fout_stir_norm_header, f_template, fout_randoms, start_stop, fout_af, fout_acf,
-                                fout_scatter)
+                                fout_stir_norm_header, f_template, None, start_stop, fout_af, fout_acf, fout_scatter,
+                                fout_randoms)
 
 
 def prepare_challenge_STIR_data(challenge_data_path: str, intermediate_data_path: str, f_listmode: str,
