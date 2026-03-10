@@ -3,7 +3,8 @@
 [![website](https://img.shields.io/badge/announcement-website-purple?logo=workplace&logoColor=white)](https://www.ccpsynerbi.ac.uk/events/petric2/)
 [![wiki](https://img.shields.io/badge/details-wiki-blue?logo=googledocs&logoColor=white)][wiki]
 [![register](https://img.shields.io/badge/participate-register-green?logo=ticktick&logoColor=white)][register]
-[![leaderboard](https://img.shields.io/badge/rankings-leaderboard-orange?logo=tensorflow&logoColor=white)][leaderboard]
+[![leaderboard](https://img.shields.io/badge/results-leaderboard-orange)][leaderboard]
+[![tensorboard](https://img.shields.io/badge/metrics-tensorboard-orange?logo=tensorflow&logoColor=white)][tensorboard]
 [![discord](https://img.shields.io/badge/chat-discord-blue?logo=discord&logoColor=white)](https://discord.gg/Ayd72Aa4ry)
 
 ## Participating
@@ -114,7 +115,7 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC2/wiki
 - `metrics` are calculated by `class QualityMetrics` within `petric.py`
   + this does not contribute to your runtime limit
   + effectively, only `Submission(data).run(np.inf, callbacks=submission_callbacks)` is timed
-- when using the temporary [leaderboard], it is best to:
+- when using the temporary [tensorboard], it is best to:
   + change `Horizontal Axis` to `Relative`
   + untick `Ignore outliers in chart scaling`
   + see [the wiki](https://github.com/SyneRBI/PETRIC2/wiki#metrics-and-thresholds) for details
@@ -122,4 +123,5 @@ See the [wiki/Home][wiki] and [wiki/FAQ](https://github.com/SyneRBI/PETRIC2/wiki
 Any modifications to `petric.py` are ignored.
 
 [wiki]: https://github.com/SyneRBI/PETRIC2/wiki
-[leaderboard]: https://petric.tomography.stfc.ac.uk/2/leaderboard/?smoothing=0#timeseries&_smoothingWeight=0
+[leaderboard]: https://petric.tomography.stfc.ac.uk/2/leaderboard/
+[tensorboard]: https://petric.tomography.stfc.ac.uk/2/tensorboard/?smoothing=0#timeseries&_smoothingWeight=0
