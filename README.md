@@ -9,7 +9,7 @@
 
 PETRIC 2 has now concluded. Please check out the  [awards-and-results](https://github.com/SyneRBI/PETRIC2/wiki/Awards-and-results)!
 
-Recordings of the PETRIC 2 winners' presentations are available on [https://www.ccpsynerbi.ac.uk/petric2-airbi](https://www.ccpsynerbi.ac.uk/petric2-airbi)
+Recordings of the PETRIC 2 winners' presentations will be (are?) available on [https://www.ccpsynerbi.ac.uk/petric2-airbi](https://www.ccpsynerbi.ac.uk/petric2-airbi)
 
 ## What's the same?
 As with [the previous challenge (PETRIC1)](https://github.com/SyneRBI/PETRIC), the goal is to solve a maximum a-posteriori (MAP) estimate using a smoothed relative difference prior (RDP), reaching the target image quality as fast as possible.
