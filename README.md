@@ -2,16 +2,14 @@
 
 [![website](https://img.shields.io/badge/announcement-website-purple?logo=workplace&logoColor=white)](https://www.ccpsynerbi.ac.uk/events/petric2/)
 [![wiki](https://img.shields.io/badge/details-wiki-blue?logo=googledocs&logoColor=white)][wiki]
-[![register](https://img.shields.io/badge/participate-register-green?logo=ticktick&logoColor=white)][register]
-[![leaderboard](https://img.shields.io/badge/results-leaderboard-orange)][leaderboard]
-[![tensorboard](https://img.shields.io/badge/metrics-tensorboard-orange?logo=tensorflow&logoColor=white)][tensorboard]
+[![leaderboard](https://img.shields.io/badge/results-leaderboard-orange?logo=ticktick&logoColor=white)][leaderboard]
 [![discord](https://img.shields.io/badge/chat-discord-blue?logo=discord&logoColor=white)](https://discord.gg/Ayd72Aa4ry)
 
 ## Participating
 
-The organisers will provide GPU-enabled cloud runners which have access to larger private datasets for evaluation. To gain access, you must [register]. The organisers will then create a private team submission repository for you.
+PETRIC 2 has now concluded. Please check out the [awards-and-results](https://github.com/SyneRBI/PETRIC2/wiki/Awards-and-results)!
 
-[register]: https://github.com/SyneRBI/PETRIC2/issues/new/choose
+Recordings of the PETRIC 2 winners' presentations will be (are?) available on <https://www.ccpsynerbi.ac.uk/petric2-winners>.
 
 ## What's the same?
 As with [the previous challenge (PETRIC1)](https://github.com/SyneRBI/PETRIC), the goal is to solve a maximum a-posteriori (MAP) estimate using a smoothed relative difference prior (RDP), reaching the target image quality as fast as possible.
